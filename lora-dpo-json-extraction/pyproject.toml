@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=69.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lora-dpo-json-extraction"
+version = "0.1.0"
+description = "End-to-end tutorial project: LoRA/QLoRA + DPO fine-tuning for JSON extraction"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "torch>=2.3.0",
+  "transformers>=4.44.0",
+  "peft>=0.11.0",
+  "datasets>=2.20.0",
+  "accelerate>=0.33.0",
+  "loguru>=0.7.2",
+  "pydantic>=2.8.0",
+  "pyyaml>=6.0.2",
+  "tqdm>=4.66.0",
+  "numpy>=2.0.0",
+  "pytest>=8.3.0"
+]
+
+[project.optional-dependencies]
+cpu = [
+  "torch>=2.3.0"
+]
+gpu = [
+  "bitsandbytes>=0.46.1"
+]
+
+[tool.uv]
+package = true
+torch-backend = "cpu"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Notebook/runtime outputs
+.ipynb_checkpoints/
+catboost_info/
+logs.log
+data/
+artifacts/
+outputs/
+models/
+*.csv
+*.parquet
+*.pkl
+*.joblib
+mlruns/
+*.log

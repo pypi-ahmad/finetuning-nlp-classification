@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Envs
+.venv/
+.env
+
+# Caches
+.cache/
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
+
+# Large model artifacts
+models/**/checkpoint-*/
+models/**/optimizer.pt
+models/**/scheduler.pt
+models/**/trainer_state.json
+models/**/rng_state.pth
+
+# Temporary
+artifacts/tmp/

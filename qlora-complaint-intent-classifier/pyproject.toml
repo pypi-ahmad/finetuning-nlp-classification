@@ -1,0 +1,31 @@
+[project]
+name = "qlora-complaint-intent-classifier"
+version = "0.1.0"
+description = "QLoRA fine-tuning of Qwen2.5-1.5B-Instruct for Banking77 intent classification (8 GB VRAM)."
+readme = "README.md"
+requires-python = ">=3.12.10"
+dependencies = [
+    "torch>=2.11.0",
+    "transformers>=4.53.0",
+    "peft>=0.15.0",
+    "bitsandbytes>=0.46.0",
+    "datasets>=3.6.0",
+    "trl>=0.19.0",
+    "accelerate>=1.7.0",
+    "evaluate>=0.4.3",
+    "scikit-learn>=1.9.0",
+    "numpy>=2.4.0",
+    "pandas>=3.0.0",
+    "matplotlib>=3.10.0",
+    "seaborn>=0.13.2",
+    "jupyter>=1.1.1",
+    "ipykernel>=7.0.0",
+    "ipywidgets>=8.1.0",
+    "tqdm>=4.67.0",
+    "nbformat>=5.10.0",
+    "sentencepiece>=0.2.0",
+]
+
+[tool.uv]
+package = false
+torch-backend = "cu128"

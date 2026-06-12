@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+data/raw/
+data/processed/*.parquet
+data/processed/*.json
+outputs/
+!outputs/.gitkeep
+.cache/
+*.log

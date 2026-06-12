@@ -1,0 +1,38 @@
+seed: 42
+output_root: outputs
+
+model:
+  name: distilgpt2
+  max_length: 192
+  use_qlora: false
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules:
+    - c_attn
+    - c_proj
+    - c_fc
+
+data:
+  source: banking77
+  hf_dataset: PolyAI/banking77
+  hf_train_split: train
+  hf_test_split: test
+  train_size: 320
+  val_size: 64
+  test_size: 64
+
+train:
+  sft_epochs: 3
+  dpo_epochs: 1
+  batch_size: 8
+  learning_rate: 0.0005
+  dpo_learning_rate: 0.00008
+  weight_decay: 0.0
+  warmup_ratio: 0.05
+  gradient_accumulation_steps: 1
+  max_grad_norm: 1.0
+  dpo_beta: 0.05
+
+eval:
+  max_new_tokens: 80

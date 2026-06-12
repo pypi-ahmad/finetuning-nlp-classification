@@ -1,0 +1,38 @@
+seed: 42
+output_root: outputs
+
+model:
+  name: /home/ahmad/.cache/huggingface/hub/models--Qwen--Qwen2.5-1.5B-Instruct/snapshots/989aa7980e4cf806f80c7fef2b1adb7bc71aa306
+  max_length: 256
+  use_qlora: true
+  lora_r: 8
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - up_proj
+    - down_proj
+    - gate_proj
+
+data:
+  train_size: 240
+  val_size: 40
+  test_size: 80
+
+train:
+  sft_epochs: 2
+  dpo_epochs: 1
+  batch_size: 4
+  learning_rate: 0.0002
+  dpo_learning_rate: 0.00002
+  weight_decay: 0.0
+  warmup_ratio: 0.05
+  gradient_accumulation_steps: 1
+  max_grad_norm: 1.0
+  dpo_beta: 0.01
+
+eval:
+  max_new_tokens: 80

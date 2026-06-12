@@ -1,0 +1,27 @@
+[project]
+name = "nlp-unstructured-insights"
+version = "0.1.0"
+description = "NLP insights system for extracting actionable signals from messy unstructured review text"
+readme = "README.md"
+requires-python = "==3.12.10"
+dependencies = [
+    "bertopic>=0.17.4",
+    "faiss-cpu>=1.14.2",
+    "flaml>=2.6.0",
+    "hdbscan>=0.8.44",
+    "ipykernel>=7.3.0",
+    "jupyter>=1.1.1",
+    "kaggle>=2.2.1",
+    "lazypredict>=0.3.0",
+    "matplotlib>=3.10.9",
+    "numpy>=2.4.6",
+    "pandas>=2.3.3",
+    "pycaret>=4.0.0a8",
+    "scikit-learn>=1.9.0",
+    "seaborn>=0.13.2",
+    "sentence-transformers>=5.5.1",
+    "umap-learn>=0.5.12",
+]
+
+[tool.uv]
+prerelease = "allow"

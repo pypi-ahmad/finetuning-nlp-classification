@@ -1,0 +1,131 @@
+Metadata-Version: 2.4
+Name: lora-dpo-json-extraction
+Version: 0.1.0
+Summary: End-to-end tutorial project: LoRA/QLoRA + DPO fine-tuning for JSON extraction
+Requires-Python: <3.13,>=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: torch>=2.3.0
+Requires-Dist: transformers>=4.44.0
+Requires-Dist: peft>=0.11.0
+Requires-Dist: datasets>=2.20.0
+Requires-Dist: accelerate>=0.33.0
+Requires-Dist: loguru>=0.7.2
+Requires-Dist: pydantic>=2.8.0
+Requires-Dist: pyyaml>=6.0.2
+Requires-Dist: tqdm>=4.66.0
+Requires-Dist: numpy>=2.0.0
+Requires-Dist: pytest>=8.3.0
+Provides-Extra: cpu
+Requires-Dist: torch>=2.3.0; extra == "cpu"
+Provides-Extra: gpu
+Requires-Dist: bitsandbytes>=0.46.1; extra == "gpu"
+
+# Fine-Tuning for JSON Extraction with LoRA/QLoRA + DPO
+
+End-to-end project that trains a small causal LM to perform **structured JSON extraction** from support tickets.
+
+Pipeline stages:
+1. Baseline evaluation (no fine-tuning)
+2. Supervised fine-tuning with **LoRA / QLoRA**
+3. Preference tuning with **DPO**
+4. Before-vs-after metrics with real outputs
+
+This repository is designed as a runnable tutorial and uses `uv` for reproducible setup.
+
+## What this project demonstrates
+
+- Efficient adaptation with LoRA (and QLoRA when CUDA + bitsandbytes are available)
+- Preference optimization with a pure DPO objective (chosen vs rejected outputs)
+- Reliable evaluation using task-relevant metrics:
+  - `valid_json_rate`
+  - `schema_match_rate`
+  - `exact_match_rate`
+  - `field_accuracy`
+
+## Quickstart
+
+```bash
+cd /home/ahmad/AI/Projects/lora-dpo-json-extraction
+uv sync
+uv run pytest
+uv run python -m lora_dpo_json_extraction.run_pipeline --config configs/default.yaml
+```
+
+The pipeline writes a timestamped folder inside `outputs/` containing:
+
+- `metrics_summary.json`
+- `RUN_REPORT.md`
+- `run.log`
+- `predictions_base.jsonl`
+- `predictions_sft.jsonl`
+- `predictions_dpo.jsonl`
+- `sft_adapter/`
+- `dpo_adapter/`
+
+## Tutorial: how the code is organized
+
+### 1. Data generation (`src/lora_dpo_json_extraction/data.py`)
+
+- Creates synthetic support-ticket text with controlled labels.
+- Builds deterministic train/val/test splits.
+- Produces DPO preference pairs:
+  - `chosen` = correct JSON
+  - `rejected` = wrong field / missing field / extra non-JSON text
+
+### 2. SFT training with LoRA/QLoRA (`src/lora_dpo_json_extraction/train.py`)
+
+- `train_sft(...)` loads base model and attaches LoRA adapters.
+- Loss is computed on **response tokens only** (prompt tokens masked with `-100`).
+- If `use_qlora=true` and CUDA path is valid, model loads in 4-bit NF4; otherwise it falls back to regular LoRA.
+
+### 3. DPO training (`src/lora_dpo_json_extraction/train.py`)
+
+- `train_dpo(...)` initializes policy from SFT adapter.
+- Uses a frozen reference model (same SFT adapter state).
+- Optimizes:
+
+```text
+L_DPO = -log(sigmoid(beta * ((logπ(y+)-logπ(y-)) - (logπ_ref(y+)-logπ_ref(y-)))))
+```
+
+### 4. Evaluation (`src/lora_dpo_json_extraction/evaluate.py`)
+
+- Runs generation on the test split for each stage.
+- Parses first balanced JSON object from model output.
+- Computes schema and exact-match metrics.
+- Saves raw predictions to JSONL for auditability.
+
+### 5. End-to-end orchestration (`src/lora_dpo_json_extraction/run_pipeline.py`)
+
+Single command to run all stages and persist artifacts.
+
+## Config
+
+Edit `configs/default.yaml` to control:
+
+- dataset sizes
+- LoRA hyperparameters
+- SFT and DPO epochs/lr
+- generation length for evaluation
+
+## Reproducibility and rigor
+
+- Fixed random seed (`set_seed` across Python/NumPy/Torch)
+- Split-first workflow (train/val/test created before training)
+- Baseline metrics are always computed before fine-tuning
+- Final report includes absolute metrics and deltas
+
+## Example output section (filled after run)
+
+After running, copy key metrics from `outputs/run_*/metrics_summary.json` here:
+
+| Stage | Valid JSON | Schema Match | Exact Match | Field Accuracy |
+|---|---:|---:|---:|---:|
+| base | TBD | TBD | TBD | TBD |
+| sft  | TBD | TBD | TBD | TBD |
+| dpo  | TBD | TBD | TBD | TBD |
+
+## Notes
+
+- This project uses `sshleifer/tiny-gpt2` by default so it runs quickly on CPU.
+- For stronger real-world quality, switch to a larger instruct model and keep the same pipeline.

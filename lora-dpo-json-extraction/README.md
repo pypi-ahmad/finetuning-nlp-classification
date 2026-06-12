@@ -1,0 +1,177 @@
+# Fine-Tuning for JSON Extraction with LoRA/QLoRA + DPO
+
+End-to-end project that trains a small causal LM to perform **structured JSON extraction** from support tickets.
+
+Pipeline stages:
+1. Baseline evaluation (no fine-tuning)
+2. Supervised fine-tuning with **LoRA / QLoRA**
+3. Preference tuning with **DPO**
+4. Before-vs-after metrics with real outputs
+
+This repository is designed as a runnable tutorial and uses `uv` for reproducible setup.
+
+Two runnable versions are included:
+- Version 1: synthetic dataset (fully local)
+- Version 2: internet dataset from Hugging Face (`PolyAI/banking77`)
+
+## What this project demonstrates
+
+- Efficient adaptation with LoRA (and QLoRA when CUDA + bitsandbytes are available)
+- Preference optimization with a pure DPO objective (chosen vs rejected outputs)
+- Reliable evaluation using task-relevant metrics:
+  - `valid_json_rate`
+  - `schema_match_rate`
+  - `exact_match_rate`
+  - `field_accuracy`
+
+## Quickstart
+
+```bash
+cd lora-dpo-json-extraction
+uv sync --extra gpu
+uv run pytest
+
+# Version 1 (synthetic data)
+HF_HUB_DISABLE_XET=1 uv run python -m lora_dpo_json_extraction.run_pipeline --config configs/default.yaml
+
+# Version 2 (internet data: Hugging Face Banking77)
+# On CPU-safe path:
+CUDA_VISIBLE_DEVICES='' HF_HUB_DISABLE_XET=1 uv run python -m lora_dpo_json_extraction.run_pipeline --config configs/internet_banking77.yaml
+```
+
+## Notebook Tutorial
+
+For a practical walkthrough with step-by-step cells, explanations, and executed outputs, open:
+
+- `notebooks/tutorial_lora_dpo_json_extraction.ipynb`
+
+It covers:
+- config inspection
+- synthetic + internet (`PolyAI/banking77`) data split generation
+- DPO preference-pair construction
+- artifact analysis from `outputs/`
+- optional one-cell command to re-run the full pipeline
+
+The pipeline writes a timestamped folder inside `outputs/` containing:
+
+- `metrics_summary.json`
+- `RUN_REPORT.md`
+- `run.log`
+- `predictions_base.jsonl`
+- `predictions_sft.jsonl`
+- `predictions_dpo.jsonl`
+- `sft_adapter/`
+- `dpo_adapter/`
+
+## Tutorial: how the code is organized
+
+### 1. Data generation (`src/lora_dpo_json_extraction/data.py`)
+
+- `build_splits(...)` supports two data sources:
+  - `source: synthetic`: creates synthetic support-ticket text with controlled labels
+  - `source: banking77`: loads internet data via `datasets.load_dataset("PolyAI/banking77")`
+- Banking77 labels are mapped into the project JSON schema (`intent`, `priority`, `product`, `needs_human`) using deterministic rules.
+- Produces DPO preference pairs:
+  - `chosen` = correct JSON
+  - `rejected` = wrong field / missing field / extra non-JSON text
+
+### 2. SFT training with LoRA/QLoRA (`src/lora_dpo_json_extraction/train.py`)
+
+- `train_sft(...)` loads base model and attaches LoRA adapters.
+- Loss is computed on **response tokens only** (prompt tokens masked with `-100`).
+- If `use_qlora=true` and CUDA path is valid, model loads in 4-bit NF4; otherwise it falls back to regular LoRA.
+
+### 3. DPO training (`src/lora_dpo_json_extraction/train.py`)
+
+- `train_dpo(...)` initializes policy from SFT adapter.
+- Uses a frozen reference model (same SFT adapter state).
+- Optimizes:
+
+```text
+L_DPO = -log(sigmoid(beta * ((logπ(y+)-logπ(y-)) - (logπ_ref(y+)-logπ_ref(y-)))))
+```
+
+### 4. Evaluation (`src/lora_dpo_json_extraction/evaluate.py`)
+
+- Runs generation on the test split for each stage.
+- Parses first balanced JSON object from model output.
+- Computes schema and exact-match metrics.
+- Saves raw predictions to JSONL for auditability.
+
+### 5. End-to-end orchestration (`src/lora_dpo_json_extraction/run_pipeline.py`)
+
+Single command to run all stages and persist artifacts.
+
+## Config
+
+Key configs:
+
+- `configs/default.yaml`: synthetic + local Qwen (QLoRA path)
+- `configs/internet_banking77.yaml`: internet dataset (`PolyAI/banking77`) + LoRA on `distilgpt2`
+
+Edit config files to control:
+
+- `data.source`, dataset sizes, and HF split names
+- LoRA hyperparameters
+- SFT and DPO epochs/lr
+- generation length for evaluation
+
+## Reproducibility and rigor
+
+- Fixed random seed (`set_seed` across Python/NumPy/Torch)
+- Split-first workflow (train/val/test created before training)
+- Baseline metrics are always computed before fine-tuning
+- Final report includes absolute metrics and deltas
+
+## Verified runs (real numbers)
+
+### Run A (synthetic data)
+
+Verified from:
+
+- `outputs/run_20260612_011323/metrics_summary.json`
+- `outputs/run_20260612_011323/RUN_REPORT.md`
+
+| Stage | Valid JSON | Schema Match | Exact Match | Field Accuracy |
+|---|---:|---:|---:|---:|
+| base | 1.0000 | 1.0000 | 0.0000 | 0.3156 |
+| sft  | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| dpo  | 0.9500 | 0.7500 | 0.5875 | 0.8531 |
+
+Interpretation:
+
+- LoRA/QLoRA SFT massively improved structured extraction quality on this synthetic benchmark.
+- DPO still improved over base (`exact_match +0.5875`, `field_accuracy +0.5375`) but regressed versus SFT in this setting.
+- This is a common DPO tradeoff when preference pairs are noisy or overly strong relative to already-optimized SFT behavior.
+
+### Run B (internet data: Banking77)
+
+Verified from:
+
+- `outputs/run_20260612_082322/metrics_summary.json`
+- `outputs/run_20260612_082322/RUN_REPORT.md`
+
+| Stage | Valid JSON | Schema Match | Exact Match | Field Accuracy | Avg Latency (ms) |
+|---|---:|---:|---:|---:|---:|
+| base | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 3544.26 |
+| sft  | 1.0000 | 1.0000 | 0.4219 | 0.6719 | 563.25 |
+| dpo  | 1.0000 | 1.0000 | 0.4219 | 0.6953 | 928.22 |
+
+Interpretation:
+
+- This run uses real internet-sourced text/labels from Hugging Face Banking77.
+- LoRA SFT produced the major uplift over base.
+- DPO kept exact match unchanged vs SFT but improved field accuracy (`+0.0234` absolute).
+
+## Notes
+
+- Current default config is a local cached Qwen2.5-1.5B-Instruct snapshot with QLoRA on GPU.
+- If you do not have that snapshot, set `model.name` in `configs/default.yaml` to your available local or Hub model.
+- The internet-data config is intentionally lighter (`distilgpt2`, LoRA, no QLoRA) so it can run on CPU or constrained VRAM environments.
+
+## Setup
+
+```bash
+git clone https://github.com/pypi-ahmad/lora-dpo-json-extraction.git
+cd lora-dpo-json-extraction
+```
