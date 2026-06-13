@@ -1,0 +1,5 @@
+run_name,model_name,quantized_4bit,adapter_path,n_samples,accuracy,macro_f1
+baseline_lora,distilgpt2,False,,40,0.0,0.0
+tuned_lora,distilgpt2,False,/home/ahmad/AI/Projects/lora-qlora-finetuning-lab/models/lora_distilgpt2/adapter,80,0.3125,0.09838425851863701
+baseline_qlora,facebook/opt-350m,True,,40,0.1,0.1365079365079365
+tuned_qlora,facebook/opt-350m,True,/home/ahmad/AI/Projects/lora-qlora-finetuning-lab/models/qlora_opt350m/adapter,80,0.3625,0.1404781929592695

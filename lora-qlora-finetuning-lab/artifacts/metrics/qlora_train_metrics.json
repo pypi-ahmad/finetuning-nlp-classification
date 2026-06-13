@@ -1,0 +1,21 @@
+{
+  "train": {
+    "train_runtime": 51.3507,
+    "train_samples_per_second": 1.869,
+    "train_steps_per_second": 0.234,
+    "total_flos": 10462867095552.0,
+    "train_loss": 3.627966602643331,
+    "epoch": 0.05333333333333334
+  },
+  "eval": {
+    "eval_loss": 2.897284746170044,
+    "eval_runtime": 12.2634,
+    "eval_samples_per_second": 24.463,
+    "eval_steps_per_second": 12.231,
+    "epoch": 0.05333333333333334
+  },
+  "model": "facebook/opt-350m",
+  "method": "qlora",
+  "train_samples": 1800,
+  "validation_samples": 300
+}

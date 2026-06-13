@@ -1,0 +1,241 @@
+run_name,text,gold_label,raw_completion,pred_label
+baseline_lora,i was feeling really troubled and down over what my dad said,sadness,i was feeling really,unknown
+baseline_lora,i feel so thrilled to have three such distinguished individuals such as yourselves here,joy,i feel so happy,unknown
+baseline_lora,i feel is that the most likeable characters aren t important enough to the plot,joy,i feel is that,unknown
+baseline_lora,i tune out the rest of the world and focus on the rhythm of the needles and the softness of the yarn and for that time i feel my most peaceful,joy,i tune out the,unknown
+baseline_lora,i sit here writing this i feel unhappy inside,sadness,i sit here writing,unknown
+baseline_lora,im feeling and if ive liked being pregnant,love,im feeling and if,unknown
+baseline_lora,im very hurt and i feel unimportant,sadness,i feel like i,unknown
+baseline_lora,i used to be able to hang around talk with the cashier when i was putting away my money now i feel rushed and stressed if i take a second to fumble with the coins and put them in my purse,anger,i used to be,unknown
+baseline_lora,i don t have the feeling of divine vibrations,joy,i don t have,unknown
+baseline_lora,i vented my feelings towards the pathetic excuse of a communicat,sadness,i vented my,unknown
+baseline_lora,i feel privileged to be a part of something so eternal and so precious to the lord jesus he shed his blood so that churches like this could exist,joy,i feel privileged to,unknown
+baseline_lora,i get the feeling that this could be dangerous,anger,i get the feeling,unknown
+baseline_lora,i feel like some of you have pains and you cannot imagine becoming passionate about the group or the idea that is causing pain,joy,i feel like some,unknown
+baseline_lora,i cant write a review for a book i adore unless i am feeling in the adoring mood at that moment,love,i cant write a,unknown
+baseline_lora,i mentioned in my last blog that i have started to get the feeling that i have been pressured into studying things i do not like which has also made me into a person i might not fully be,fear,i said in my,unknown
+baseline_lora,i feel like it was all in vain cant be right and feel this wrong this heart of mine is just,sadness,i feel like it,unknown
+baseline_lora,i was wondering if you will focus on the problems because any way you are not care for themselves when complaining or feeling needy,sadness,i was wondering if,unknown
+baseline_lora,im feeling insecure at the moment,fear,im feeling insecure at,unknown
+baseline_lora,i feel more of numb now,sadness,i feel more of,unknown
+baseline_lora,i feel like that because for the most part i have accepted that this is a part of my life and that people will never changed,love,i feel like that,unknown
+baseline_lora,i feel i can only hope im not alone in these thoughts and im sure to all you fellow exchange students you probably have the same thoughts in mind with at least some of this listed some might say being an exchange student is unlike any other experience,sadness,i feel i can,unknown
+baseline_lora,i feel agitated and annoyed more than worried or fearful but these feelings can easily lead to being short tempered with my family and feelings of disharmony,fear,i feel angry and,unknown
+baseline_lora,im feeling so appreciative of every experience in my life that has brought me to now to today,joy,im feeling so appreci,unknown
+baseline_lora,ive have chosen to walk with jesus and maybe im feeling a bit miserable im going to suck it up and think about these three dudes,sadness,ive have chosen,unknown
+baseline_lora,i hate feeling like this this is bullshit ok i m so done bye,joy,i hate feeling like,unknown
+baseline_lora,i see all my friends posting pics and status updates of where they are going or what they are doing and i feel a bit jealous knowing it s not something i can get out and enjoy,anger,i see all my,unknown
+baseline_lora,i feel eager to do well and i feel like ive got more titles in me he concluded ominously,joy,i feel like,unknown
+baseline_lora,i don t care if any of you read this but this is just what i feel when i m around you guys i feel hated,sadness,i don t care,unknown
+baseline_lora,i could empathize with tab because of raging hormones and the connection feeling like someone else gets you thinks youre smart pretty worth attention,joy,i could empathize,unknown
+baseline_lora,i feel like i had a rather productive weekend and i cant always say that no matter how much i get done,joy,i feel like i,unknown
+baseline_lora,i feel and talk like a disadvantaged child and am waiting for half my face to come back to me,sadness,i feel and talk,unknown
+baseline_lora,i think itd be easier if i had parents that argued with me about it then i could feel rebellious or something p but right now i just feel like a burden,anger,i think itd,unknown
+baseline_lora,i have some pretty brazen goals and each day i feel stronger and more confident that i m going to reach my desired end result,joy,i have some pretty,unknown
+baseline_lora,i feel privileged in my world,joy,i feel privileged in,unknown
+baseline_lora,i feel really irritated when i talk about my problems and people start talking about theirs,anger,i feel really angry,unknown
+baseline_lora,i could change the emphasis and say i am stella and i m noticing i m feeling impatient,anger,i could change the,unknown
+baseline_lora,im feeling really bitter about this one,anger,"sadness, joy,",sadness
+baseline_lora,i usually like sam but sometimes he gets downright whiny and i ll admit that all the mistakes he made due to sibling rivalry and pride that eventually led to the end of season kind of made me feel less tragic about the whole thing,sadness,i usually like sam,unknown
+baseline_lora,i do exercise i feel energetic and i am able to perform my other tasks in a very good manner,joy,i do exercise i,unknown
+baseline_lora,i feel fond of him though because he feels like an amalgamation of many people i already know,love,i feel like he,unknown
+tuned_lora,i was feeling really troubled and down over what my dad said,sadness,"sadness, joy,",sadness
+tuned_lora,i feel so thrilled to have three such distinguished individuals such as yourselves here,joy,"sadness, joy,",sadness
+tuned_lora,i feel is that the most likeable characters aren t important enough to the plot,joy,"sadness, joy,",sadness
+tuned_lora,i tune out the rest of the world and focus on the rhythm of the needles and the softness of the yarn and for that time i feel my most peaceful,joy,"love, joy,",joy
+tuned_lora,i sit here writing this i feel unhappy inside,sadness,"sadness, joy,",sadness
+tuned_lora,im feeling and if ive liked being pregnant,love,"sadness, joy,",sadness
+tuned_lora,im very hurt and i feel unimportant,sadness,"sadness, joy,",sadness
+tuned_lora,i used to be able to hang around talk with the cashier when i was putting away my money now i feel rushed and stressed if i take a second to fumble with the coins and put them in my purse,anger,"sadness, joy,",sadness
+tuned_lora,i don t have the feeling of divine vibrations,joy,"sadness, joy,",sadness
+tuned_lora,i vented my feelings towards the pathetic excuse of a communicat,sadness,"sadness, joy,",sadness
+tuned_lora,i feel privileged to be a part of something so eternal and so precious to the lord jesus he shed his blood so that churches like this could exist,joy,"sadness, joy,",sadness
+tuned_lora,i get the feeling that this could be dangerous,anger,"sadness, joy,",sadness
+tuned_lora,i feel like some of you have pains and you cannot imagine becoming passionate about the group or the idea that is causing pain,joy,"sadness, joy,",sadness
+tuned_lora,i cant write a review for a book i adore unless i am feeling in the adoring mood at that moment,love,"sadness, joy,",sadness
+tuned_lora,i mentioned in my last blog that i have started to get the feeling that i have been pressured into studying things i do not like which has also made me into a person i might not fully be,fear,"sadness, joy,",sadness
+tuned_lora,i feel like it was all in vain cant be right and feel this wrong this heart of mine is just,sadness,"sadness, joy,",sadness
+tuned_lora,i was wondering if you will focus on the problems because any way you are not care for themselves when complaining or feeling needy,sadness,"sadness, joy,",sadness
+tuned_lora,im feeling insecure at the moment,fear,"sadness, joy,",sadness
+tuned_lora,i feel more of numb now,sadness,"sadness, joy,",sadness
+tuned_lora,i feel like that because for the most part i have accepted that this is a part of my life and that people will never changed,love,"sadness, joy,",sadness
+tuned_lora,i feel i can only hope im not alone in these thoughts and im sure to all you fellow exchange students you probably have the same thoughts in mind with at least some of this listed some might say being an exchange student is unlike any other experience,sadness,"sadness, joy,",sadness
+tuned_lora,i feel agitated and annoyed more than worried or fearful but these feelings can easily lead to being short tempered with my family and feelings of disharmony,fear,"sadness, joy,",sadness
+tuned_lora,im feeling so appreciative of every experience in my life that has brought me to now to today,joy,"sadness, joy,",sadness
+tuned_lora,ive have chosen to walk with jesus and maybe im feeling a bit miserable im going to suck it up and think about these three dudes,sadness,"ive love,",love
+tuned_lora,i hate feeling like this this is bullshit ok i m so done bye,joy,"sadness, joy,",sadness
+tuned_lora,i see all my friends posting pics and status updates of where they are going or what they are doing and i feel a bit jealous knowing it s not something i can get out and enjoy,anger,"sadness, joy,",sadness
+tuned_lora,i feel eager to do well and i feel like ive got more titles in me he concluded ominously,joy,"sadness, joy,",sadness
+tuned_lora,i don t care if any of you read this but this is just what i feel when i m around you guys i feel hated,sadness,"sadness, joy,",sadness
+tuned_lora,i could empathize with tab because of raging hormones and the connection feeling like someone else gets you thinks youre smart pretty worth attention,joy,"sadness, joy,",sadness
+tuned_lora,i feel like i had a rather productive weekend and i cant always say that no matter how much i get done,joy,"sadness, joy,",sadness
+tuned_lora,i feel and talk like a disadvantaged child and am waiting for half my face to come back to me,sadness,"sadness, joy,",sadness
+tuned_lora,i think itd be easier if i had parents that argued with me about it then i could feel rebellious or something p but right now i just feel like a burden,anger,"sadness, joy,",sadness
+tuned_lora,i have some pretty brazen goals and each day i feel stronger and more confident that i m going to reach my desired end result,joy,"sadness, joy,",sadness
+tuned_lora,i feel privileged in my world,joy,"sadness, joy,",sadness
+tuned_lora,i feel really irritated when i talk about my problems and people start talking about theirs,anger,"sadness, joy,",sadness
+tuned_lora,i could change the emphasis and say i am stella and i m noticing i m feeling impatient,anger,"sadness, joy,",sadness
+tuned_lora,im feeling really bitter about this one,anger,"sadness, joy,",sadness
+tuned_lora,i usually like sam but sometimes he gets downright whiny and i ll admit that all the mistakes he made due to sibling rivalry and pride that eventually led to the end of season kind of made me feel less tragic about the whole thing,sadness,"sadness, joy,",sadness
+tuned_lora,i do exercise i feel energetic and i am able to perform my other tasks in a very good manner,joy,"sadness, joy,",sadness
+tuned_lora,i feel fond of him though because he feels like an amalgamation of many people i already know,love,"sadness, joy,",sadness
+tuned_lora,i was feeling frantic,fear,"sadness, joy,",sadness
+tuned_lora,i like in this world and making a list of them always makes me feel joyful,joy,"sadness, joy,",sadness
+tuned_lora,i lay here typing this hate blog entry that no one would read although i want the whole world to read and praise me like dickens i feel so miserable,sadness,"sadness, joy,",sadness
+tuned_lora,i feel myself falling into the pit of buying it from her i think he s for real i m just skeptical of the women,fear,"sadness, joy,",sadness
+tuned_lora,i am reading about s sewing circles and i feel completely happy if you cant spit in the face of imperialism at least be a lesbian,joy,"love, joy,",joy
+tuned_lora,i suspect his reasoning may simply be to lull apple into feeling complacent,joy,"sadness, joy,",sadness
+tuned_lora,i feel as if we have a talented enough team to win some games and go deep into the tournament,joy,"sadness, joy,",sadness
+tuned_lora,i think they have always been proponents of the idea and it is just slightly possible that his feelings for a particularly charming new england girl have brought him around to their way of thinking,joy,"sadness, joy,",sadness
+tuned_lora,i didnt make it to my weight watchers meeting feeling guilty i made sure i had a healthy breakfast consisting of museli yoghurt and fruit,sadness,"sadness, joy,",sadness
+tuned_lora,i feel more assured having made my peace with atheism,joy,"love, joy,",joy
+tuned_lora,i did feel things it was often just repressed fear and anxiety and distrust,sadness,"sadness, joy,",sadness
+tuned_lora,i feel a strange gratitude for the hated israeli occupation of sinai that lasted from to for actually recognizing the importance of sinais history,surprise,"sadness, joy,",sadness
+tuned_lora,i read it at a time amp place where i was feeling less than perfect,joy,"sadness, joy,",sadness
+tuned_lora,i don t know about you but i m feeling amp blessed,joy,"sadness, joy,",sadness
+tuned_lora,is hand started fondling his aching cock through the fabric of his boxers and he instinctively arched his back to feel more of the delicious sensation,joy,"love, joy,",joy
+tuned_lora,i felt that my birthday was my one day to feel special and i could do whatever i wanted,joy,"sadness, joy,",sadness
+tuned_lora,i should pull out if i feel resentful or edgy,anger,"sadness, joy,",sadness
+tuned_lora,i managed to re learn feeling insecure again,fear,"sadness, joy,",sadness
+tuned_lora,im feeling generous this week,joy,"sadness, joy,",sadness
+tuned_lora,i think were on a level of understanding though i still feel hes hesitant,fear,"sadness, joy,",sadness
+tuned_lora,i feel lonely who make me feel special when i feel useless who are always kind and sweet to me,sadness,"sadness, joy,",sadness
+tuned_lora,i was asked to toast with champagne at the death bed and i remember feeling disgusted,anger,"sadness, joy,",sadness
+tuned_lora,i feel about this part of my life and how treasured my london flatmates are to me it was especially neat to point at something and say this is where,love,"sadness, joy,",sadness
+tuned_lora,im not sure how i feel more than anything im keen to see it as a test to see if im over him yet and ready to view him as a friend,joy,i feel like i,unknown
+tuned_lora,i am writing and sharing here is much more about my own story and what i believe with all my heart the world needs to know the riches we have in god than me feeling angry towards or trying to bash the people and leaders and parents,anger,"sadness, joy,",sadness
+tuned_lora,i do feel insecure sometimes but who doesnt,fear,"sadness, joy,",sadness
+tuned_lora,i feel very strongly about supporting charities that help children,joy,"love, joy,",joy
+tuned_lora,i only talk about how people make me feel and the only people i talk about are the ones that make me feel unhappy upset nervous or angry,sadness,"sadness, joy,",sadness
+tuned_lora,i feel completely rude with not keeping up with some of you over the course of the year but it has been a mightily busy one,anger,"sadness, joy,",sadness
+tuned_lora,i feel very glad that finland s well known visual artist vesa kivinen had called me to work with him,joy,"sadness, joy,",sadness
+tuned_lora,i feel like the crows and roosters will be teamed up with the horses and go against the bulls sharks and other monsters that are trying to take over of cool ranch,joy,"sadness, joy,",sadness
+tuned_lora,i was feeling particularly vulnerable in a specific area so i began to talking to my friends and interestingly enough there was an incredible understanding of my struggle,fear,"sadness, joy,",sadness
+tuned_lora,i wasnt very interested in it but it evoked the feeling of an earth grittily doomed by aliens quite well,sadness,"sadness, joy,",sadness
+tuned_lora,i feel i m handling it well and i m enjoying it he said,joy,"sadness, joy,",sadness
+tuned_lora,i feel anger i feel sad i feel joy and i feel other emotions too but will stick to a few,sadness,"sadness, joy,",sadness
+tuned_lora,i feel special excitement and happiness,joy,"sadness, joy,",sadness
+tuned_lora,i feel as though it is worthwhile and career wise,joy,"sadness, joy,",sadness
+tuned_lora,i feel privileged to have played against him,joy,"sadness, joy,",sadness
+tuned_lora,im feeling sentimental or in need of reassurance,sadness,"sadness, joy,",sadness
+tuned_lora,i always make things harder which im not going to lie i sometimes have a way of complicating the very simple however a new baby is a pretty big undertaking and from this comment and many many others i feel like he sees himself as being disturbed very little,sadness,"sadness, joy,",sadness
+baseline_qlora,i was feeling really troubled and down over what my dad said,sadness,"sadness, joy,",sadness
+baseline_qlora,i feel so thrilled to have three such distinguished individuals such as yourselves here,joy,i feel so happy,unknown
+baseline_qlora,i feel is that the most likeable characters aren t important enough to the plot,joy,i feel is that,unknown
+baseline_qlora,i tune out the rest of the world and focus on the rhythm of the needles and the softness of the yarn and for that time i feel my most peaceful,joy,i feel the joy,joy
+baseline_qlora,i sit here writing this i feel unhappy inside,sadness,"sadness, joy,",sadness
+baseline_qlora,im feeling and if ive liked being pregnant,love,I'm feeling and,unknown
+baseline_qlora,im very hurt and i feel unimportant,sadness,I feel unimportant,unknown
+baseline_qlora,i used to be able to hang around talk with the cashier when i was putting away my money now i feel rushed and stressed if i take a second to fumble with the coins and put them in my purse,anger,i used to be,unknown
+baseline_qlora,i don t have the feeling of divine vibrations,joy,i don t have,unknown
+baseline_qlora,i vented my feelings towards the pathetic excuse of a communicat,sadness,i vented my,unknown
+baseline_qlora,i feel privileged to be a part of something so eternal and so precious to the lord jesus he shed his blood so that churches like this could exist,joy,I feel privileged to,unknown
+baseline_qlora,i get the feeling that this could be dangerous,anger,I get the feeling,unknown
+baseline_qlora,i feel like some of you have pains and you cannot imagine becoming passionate about the group or the idea that is causing pain,joy,i feel like some,unknown
+baseline_qlora,i cant write a review for a book i adore unless i am feeling in the adoring mood at that moment,love,"i love you,",love
+baseline_qlora,i mentioned in my last blog that i have started to get the feeling that i have been pressured into studying things i do not like which has also made me into a person i might not fully be,fear,i have been studying,unknown
+baseline_qlora,i feel like it was all in vain cant be right and feel this wrong this heart of mine is just,sadness,I feel like it,unknown
+baseline_qlora,i was wondering if you will focus on the problems because any way you are not care for themselves when complaining or feeling needy,sadness,I am not a,unknown
+baseline_qlora,im feeling insecure at the moment,fear,I'm feeling insecure,unknown
+baseline_qlora,i feel more of numb now,sadness,I feel more of,unknown
+baseline_qlora,i feel like that because for the most part i have accepted that this is a part of my life and that people will never changed,love,i feel like that,unknown
+baseline_qlora,i feel i can only hope im not alone in these thoughts and im sure to all you fellow exchange students you probably have the same thoughts in mind with at least some of this listed some might say being an exchange student is unlike any other experience,sadness,i feel i can,unknown
+baseline_qlora,i feel agitated and annoyed more than worried or fearful but these feelings can easily lead to being short tempered with my family and feelings of disharmony,fear,i feel angry and,unknown
+baseline_qlora,im feeling so appreciative of every experience in my life that has brought me to now to today,joy,I am feeling so,unknown
+baseline_qlora,ive have chosen to walk with jesus and maybe im feeling a bit miserable im going to suck it up and think about these three dudes,sadness,,unknown
+baseline_qlora,i hate feeling like this this is bullshit ok i m so done bye,joy,i hate feeling like,unknown
+baseline_qlora,i see all my friends posting pics and status updates of where they are going or what they are doing and i feel a bit jealous knowing it s not something i can get out and enjoy,anger,I feel like I,unknown
+baseline_qlora,i feel eager to do well and i feel like ive got more titles in me he concluded ominously,joy,I feel eager to,unknown
+baseline_qlora,i don t care if any of you read this but this is just what i feel when i m around you guys i feel hated,sadness,I don t care,unknown
+baseline_qlora,i could empathize with tab because of raging hormones and the connection feeling like someone else gets you thinks youre smart pretty worth attention,joy,I could empathize,unknown
+baseline_qlora,i feel like i had a rather productive weekend and i cant always say that no matter how much i get done,joy,i feel like i,unknown
+baseline_qlora,i feel and talk like a disadvantaged child and am waiting for half my face to come back to me,sadness,i feel and talk,unknown
+baseline_qlora,i think itd be easier if i had parents that argued with me about it then i could feel rebellious or something p but right now i just feel like a burden,anger,I think itd,unknown
+baseline_qlora,i have some pretty brazen goals and each day i feel stronger and more confident that i m going to reach my desired end result,joy,i am a very,unknown
+baseline_qlora,i feel privileged in my world,joy,i feel privileged in,unknown
+baseline_qlora,i feel really irritated when i talk about my problems and people start talking about theirs,anger,i feel really angry,unknown
+baseline_qlora,i could change the emphasis and say i am stella and i m noticing i m feeling impatient,anger,i m feeling impatient,unknown
+baseline_qlora,im feeling really bitter about this one,anger,I'm feeling really,unknown
+baseline_qlora,i usually like sam but sometimes he gets downright whiny and i ll admit that all the mistakes he made due to sibling rivalry and pride that eventually led to the end of season kind of made me feel less tragic about the whole thing,sadness,I like Sam but,unknown
+baseline_qlora,i do exercise i feel energetic and i am able to perform my other tasks in a very good manner,joy,i feel happy and,unknown
+baseline_qlora,i feel fond of him though because he feels like an amalgamation of many people i already know,love,I feel fond of,unknown
+tuned_qlora,i was feeling really troubled and down over what my dad said,sadness,"sadness, joy,",sadness
+tuned_qlora,i feel so thrilled to have three such distinguished individuals such as yourselves here,joy,"joy, joy,",joy
+tuned_qlora,i feel is that the most likeable characters aren t important enough to the plot,joy,"sadness, joy,",sadness
+tuned_qlora,i tune out the rest of the world and focus on the rhythm of the needles and the softness of the yarn and for that time i feel my most peaceful,joy,"sadness, joy,",sadness
+tuned_qlora,i sit here writing this i feel unhappy inside,sadness,"sadness, joy,",sadness
+tuned_qlora,im feeling and if ive liked being pregnant,love,"sadness, joy,",sadness
+tuned_qlora,im very hurt and i feel unimportant,sadness,"sadness, joy,",sadness
+tuned_qlora,i used to be able to hang around talk with the cashier when i was putting away my money now i feel rushed and stressed if i take a second to fumble with the coins and put them in my purse,anger,"sadness, joy,",sadness
+tuned_qlora,i don t have the feeling of divine vibrations,joy,"sadness, joy,",sadness
+tuned_qlora,i vented my feelings towards the pathetic excuse of a communicat,sadness,"anger, fear,",anger
+tuned_qlora,i feel privileged to be a part of something so eternal and so precious to the lord jesus he shed his blood so that churches like this could exist,joy,"joy, joy,",joy
+tuned_qlora,i get the feeling that this could be dangerous,anger,"fear, surprise,",fear
+tuned_qlora,i feel like some of you have pains and you cannot imagine becoming passionate about the group or the idea that is causing pain,joy,"sadness, joy,",sadness
+tuned_qlora,i cant write a review for a book i adore unless i am feeling in the adoring mood at that moment,love,"sadness, joy,",sadness
+tuned_qlora,i mentioned in my last blog that i have started to get the feeling that i have been pressured into studying things i do not like which has also made me into a person i might not fully be,fear,"sadness, joy,",sadness
+tuned_qlora,i feel like it was all in vain cant be right and feel this wrong this heart of mine is just,sadness,"sadness, joy,",sadness
+tuned_qlora,i was wondering if you will focus on the problems because any way you are not care for themselves when complaining or feeling needy,sadness,"sadness, joy,",sadness
+tuned_qlora,im feeling insecure at the moment,fear,"sadness, joy,",sadness
+tuned_qlora,i feel more of numb now,sadness,"sadness, joy,",sadness
+tuned_qlora,i feel like that because for the most part i have accepted that this is a part of my life and that people will never changed,love,"sadness, joy,",sadness
+tuned_qlora,i feel i can only hope im not alone in these thoughts and im sure to all you fellow exchange students you probably have the same thoughts in mind with at least some of this listed some might say being an exchange student is unlike any other experience,sadness,"sadness, joy,",sadness
+tuned_qlora,i feel agitated and annoyed more than worried or fearful but these feelings can easily lead to being short tempered with my family and feelings of disharmony,fear,"anger, fear,",anger
+tuned_qlora,im feeling so appreciative of every experience in my life that has brought me to now to today,joy,"sadness, joy,",sadness
+tuned_qlora,ive have chosen to walk with jesus and maybe im feeling a bit miserable im going to suck it up and think about these three dudes,sadness,"sadness, joy",sadness
+tuned_qlora,i hate feeling like this this is bullshit ok i m so done bye,joy,"sadness, joy,",sadness
+tuned_qlora,i see all my friends posting pics and status updates of where they are going or what they are doing and i feel a bit jealous knowing it s not something i can get out and enjoy,anger,"sadness, joy,",sadness
+tuned_qlora,i feel eager to do well and i feel like ive got more titles in me he concluded ominously,joy,"joy, joy,",joy
+tuned_qlora,i don t care if any of you read this but this is just what i feel when i m around you guys i feel hated,sadness,"anger, sadness,",sadness
+tuned_qlora,i could empathize with tab because of raging hormones and the connection feeling like someone else gets you thinks youre smart pretty worth attention,joy,"anger, sadness,",sadness
+tuned_qlora,i feel like i had a rather productive weekend and i cant always say that no matter how much i get done,joy,"sadness, joy,",sadness
+tuned_qlora,i feel and talk like a disadvantaged child and am waiting for half my face to come back to me,sadness,"sadness, joy,",sadness
+tuned_qlora,i think itd be easier if i had parents that argued with me about it then i could feel rebellious or something p but right now i just feel like a burden,anger,"sadness, joy,",sadness
+tuned_qlora,i have some pretty brazen goals and each day i feel stronger and more confident that i m going to reach my desired end result,joy,"sadness, joy,",sadness
+tuned_qlora,i feel privileged in my world,joy,"joy, joy,",joy
+tuned_qlora,i feel really irritated when i talk about my problems and people start talking about theirs,anger,"anger, sadness,",sadness
+tuned_qlora,i could change the emphasis and say i am stella and i m noticing i m feeling impatient,anger,"sadness, joy,",sadness
+tuned_qlora,im feeling really bitter about this one,anger,"sadness, joy,",sadness
+tuned_qlora,i usually like sam but sometimes he gets downright whiny and i ll admit that all the mistakes he made due to sibling rivalry and pride that eventually led to the end of season kind of made me feel less tragic about the whole thing,sadness,"sadness, joy,",sadness
+tuned_qlora,i do exercise i feel energetic and i am able to perform my other tasks in a very good manner,joy,"happy, joy,",joy
+tuned_qlora,i feel fond of him though because he feels like an amalgamation of many people i already know,love,"sadness, joy,",sadness
+tuned_qlora,i was feeling frantic,fear,"sadness, joy,",sadness
+tuned_qlora,i like in this world and making a list of them always makes me feel joyful,joy,"sadness, joy,",sadness
+tuned_qlora,i lay here typing this hate blog entry that no one would read although i want the whole world to read and praise me like dickens i feel so miserable,sadness,"sadness, joy,",sadness
+tuned_qlora,i feel myself falling into the pit of buying it from her i think he s for real i m just skeptical of the women,fear,"sadness, joy,",sadness
+tuned_qlora,i am reading about s sewing circles and i feel completely happy if you cant spit in the face of imperialism at least be a lesbian,joy,"sadness, joy,",sadness
+tuned_qlora,i suspect his reasoning may simply be to lull apple into feeling complacent,joy,"anger, fear,",anger
+tuned_qlora,i feel as if we have a talented enough team to win some games and go deep into the tournament,joy,"sadness, joy,",sadness
+tuned_qlora,i think they have always been proponents of the idea and it is just slightly possible that his feelings for a particularly charming new england girl have brought him around to their way of thinking,joy,"sadness, joy,",sadness
+tuned_qlora,i didnt make it to my weight watchers meeting feeling guilty i made sure i had a healthy breakfast consisting of museli yoghurt and fruit,sadness,"sadness, joy,",sadness
+tuned_qlora,i feel more assured having made my peace with atheism,joy,"sadness, joy,",sadness
+tuned_qlora,i did feel things it was often just repressed fear and anxiety and distrust,sadness,"sadness, joy,",sadness
+tuned_qlora,i feel a strange gratitude for the hated israeli occupation of sinai that lasted from to for actually recognizing the importance of sinais history,surprise,"sadness, joy,",sadness
+tuned_qlora,i read it at a time amp place where i was feeling less than perfect,joy,"sadness, joy,",sadness
+tuned_qlora,i don t know about you but i m feeling amp blessed,joy,"sadness, joy,",sadness
+tuned_qlora,is hand started fondling his aching cock through the fabric of his boxers and he instinctively arched his back to feel more of the delicious sensation,joy,is hand started fond,unknown
+tuned_qlora,i felt that my birthday was my one day to feel special and i could do whatever i wanted,joy,"sadness, joy,",sadness
+tuned_qlora,i should pull out if i feel resentful or edgy,anger,"anger, fear,",anger
+tuned_qlora,i managed to re learn feeling insecure again,fear,"sadness, joy,",sadness
+tuned_qlora,im feeling generous this week,joy,"joy, love,",joy
+tuned_qlora,i think were on a level of understanding though i still feel hes hesitant,fear,"sadness, joy,",sadness
+tuned_qlora,i feel lonely who make me feel special when i feel useless who are always kind and sweet to me,sadness,"sadness, joy,",sadness
+tuned_qlora,i was asked to toast with champagne at the death bed and i remember feeling disgusted,anger,"sadness, joy,",sadness
+tuned_qlora,i feel about this part of my life and how treasured my london flatmates are to me it was especially neat to point at something and say this is where,love,"sadness, joy,",sadness
+tuned_qlora,im not sure how i feel more than anything im keen to see it as a test to see if im over him yet and ready to view him as a friend,joy,"sadness, joy,",sadness
+tuned_qlora,i am writing and sharing here is much more about my own story and what i believe with all my heart the world needs to know the riches we have in god than me feeling angry towards or trying to bash the people and leaders and parents,anger,"sadness, joy,",sadness
+tuned_qlora,i do feel insecure sometimes but who doesnt,fear,"sadness, joy,",sadness
+tuned_qlora,i feel very strongly about supporting charities that help children,joy,"sadness, joy,",sadness
+tuned_qlora,i only talk about how people make me feel and the only people i talk about are the ones that make me feel unhappy upset nervous or angry,sadness,"sadness, joy,",sadness
+tuned_qlora,i feel completely rude with not keeping up with some of you over the course of the year but it has been a mightily busy one,anger,"sadness, joy,",sadness
+tuned_qlora,i feel very glad that finland s well known visual artist vesa kivinen had called me to work with him,joy,"happy, joy,",joy
+tuned_qlora,i feel like the crows and roosters will be teamed up with the horses and go against the bulls sharks and other monsters that are trying to take over of cool ranch,joy,"sadness, joy,",sadness
+tuned_qlora,i was feeling particularly vulnerable in a specific area so i began to talking to my friends and interestingly enough there was an incredible understanding of my struggle,fear,"sadness, joy,",sadness
+tuned_qlora,i wasnt very interested in it but it evoked the feeling of an earth grittily doomed by aliens quite well,sadness,"sadness, joy,",sadness
+tuned_qlora,i feel i m handling it well and i m enjoying it he said,joy,"sadness, joy,",sadness
+tuned_qlora,i feel anger i feel sad i feel joy and i feel other emotions too but will stick to a few,sadness,"sadness, joy,",sadness
+tuned_qlora,i feel special excitement and happiness,joy,"sadness, joy,",sadness
+tuned_qlora,i feel as though it is worthwhile and career wise,joy,"sadness, joy,",sadness
+tuned_qlora,i feel privileged to have played against him,joy,"joy, joy,",joy
+tuned_qlora,im feeling sentimental or in need of reassurance,sadness,"sadness, joy,",sadness
+tuned_qlora,i always make things harder which im not going to lie i sometimes have a way of complicating the very simple however a new baby is a pretty big undertaking and from this comment and many many others i feel like he sees himself as being disturbed very little,sadness,"sadness, joy,",sadness

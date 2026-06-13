@@ -1,0 +1,21 @@
+{
+  "train": {
+    "train_runtime": 6.9273,
+    "train_samples_per_second": 69.291,
+    "train_steps_per_second": 4.331,
+    "total_flos": 9199127494656.0,
+    "train_loss": 4.146671994527181,
+    "epoch": 0.26666666666666666
+  },
+  "eval": {
+    "eval_loss": 3.566974401473999,
+    "eval_runtime": 0.7485,
+    "eval_samples_per_second": 400.813,
+    "eval_steps_per_second": 50.77,
+    "epoch": 0.26666666666666666
+  },
+  "model": "distilgpt2",
+  "method": "lora",
+  "train_samples": 1800,
+  "validation_samples": 300
+}
