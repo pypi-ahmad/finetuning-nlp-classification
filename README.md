@@ -1,62 +1,37 @@
-# finetuning-nlp-classification
-
-## Overview
+# Finetuning Nlp Classification
 
 Fine-tuning and NLP classification projects across LoRA/QLoRA and PyTorch.
 
-## Tech Stack
+## Repository Purpose
 
-- Multi-project repository
+This repository groups related projects into a single, navigable codebase with consistent structure and indexing.
 
-## Repository Structure
+## Project Index
 
-- `CHANGELOG.md`
-- `CODE_OF_CONDUCT.md`
-- `CONTRIBUTING.md`
-- `hierarchical-qlora-complaint-triage/`
-- `LICENSE`
-- `lora-dispute-ticket-routing/`
-- `lora-dpo-json-extraction/`
-- `lora-qlora-finetuning-lab/`
-- `nlp-unstructured-insights/`
-- `pytorch-distilbert-complaint-classifier/`
-- `qlora-complaint-intent-classifier/`
-- `README.md`
-- ... and 1 more entries
+| # | Project | Folder | Source Directory | Source Repository | Source Commit |
+|---|---|---|---|---|---|
+| 1 | `hierarchical-qlora-complaint-triage` | `hierarchical-qlora-complaint-triage` | `hierarchical-qlora-complaint-triage` | https://github.com/pypi-ahmad/hierarchical-qlora-complaint-triage.git | `2acb86df5e` |
+| 2 | `lora-dispute-ticket-routing` | `lora-dispute-ticket-routing` | `lora-dispute-ticket-routing` | https://github.com/pypi-ahmad/lora-dispute-ticket-routing.git | `0a1b4c1105` |
+| 3 | `lora-dpo-json-extraction` | `lora-dpo-json-extraction` | `lora-dpo-json-extraction` | https://github.com/pypi-ahmad/lora-dpo-json-extraction.git | `46efb0be79` |
+| 4 | `lora-qlora-finetuning-lab` | `lora-qlora-finetuning-lab` | `lora-qlora-finetuning-lab` | https://github.com/pypi-ahmad/lora-qlora-finetuning-lab.git | `cc615c2fc3` |
+| 5 | `nlp-unstructured-insights` | `nlp-unstructured-insights` | `nlp-unstructured-insights` | https://github.com/pypi-ahmad/nlp-unstructured-insights.git | `076c7b9396` |
+| 6 | `pytorch-distilbert-complaint-classifier` | `pytorch-distilbert-complaint-classifier` | `pytorch-distilbert-complaint-classifier` | https://github.com/pypi-ahmad/pytorch-distilbert-complaint-classifier.git | `796bb02ad4` |
+| 7 | `qlora-complaint-intent-classifier` | `qlora-complaint-intent-classifier` | `qlora-complaint-intent-classifier` | https://github.com/pypi-ahmad/qlora-complaint-intent-classifier.git | `128ac11b5e` |
+
+## Layout
+
+- Each top-level folder is a standalone project migrated from the source workspace.
+- Heavy local-only artifacts (virtual environments, datasets, model weights, caches) are intentionally excluded.
 
 ## Getting Started
 
-### Prerequisites
-
-- Git
-- Runtime dependencies for this project's stack
-
-### Installation
-
 ```bash
-Review project-specific setup files in the repository root.
+git clone <this-repo-url>
+cd <this-repo-folder>
+cd <project-folder>
 ```
 
-## Usage
+## Maintenance Notes
 
-Use the project's documented entrypoint (CLI/app script) from this repository.
-
-## Testing
-
-Add tests under `tests/` and run the repository's configured test command.
-
-## Security
-
-Please review [SECURITY.md](SECURITY.md) for reporting and handling security issues.
-
-## Contributing
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before opening issues or pull requests.
-
-## Changelog
-
-Ongoing changes are tracked in [CHANGELOG.md](CHANGELOG.md).
-
-## License
-
-This project is licensed under the terms described in [LICENSE](LICENSE).
+- Keep project-level documentation inside each project folder.
+- Use this repository as a curated portfolio layer across related workstreams.
