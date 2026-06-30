@@ -1,0 +1,1261 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R] /Count 11 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 2897 >>
+stream
+BT
+/F1 10 Tf
+13 TL
+50 742 Td
+(# Zero to Hero Study Handbook: pytorch-distilbert-complaint-classifier) Tj
+T*
+() Tj
+T*
+(## Module 1: Foundations & Architecture) Tj
+T*
+() Tj
+T*
+(### 1.1 What This Project Does) Tj
+T*
+(This project fine-tunes DistilBERT to classify short banking support queries into 77 intent ) Tj
+T*
+(classes \(for example, `card_arrival`, `declined_transaction`, `extra_charge_on_statement`\), ) Tj
+T*
+(using the Banking77 dataset.) Tj
+T*
+() Tj
+T*
+(Primary use cases in this repository:) Tj
+T*
+(- Train and evaluate a transformer-based intent classifier end-to-end in a notebook workflow.) Tj
+T*
+(- Compare transformer performance against a classical baseline \(`TF-IDF + LogisticRegression`\).) Tj
+T*
+(- Run production-style CLI inference for single text or batch files via `inference.py`.) Tj
+T*
+() Tj
+T*
+(The source of truth for the notebook content is `generate_notebook.py`, which generates ) Tj
+T*
+(`pytorch_distilbert_complaint_classifier.ipynb`.) Tj
+T*
+() Tj
+T*
+(### 1.2 Core Paradigms and Patterns Used Here) Tj
+T*
+(Definitions first, then where they appear:) Tj
+T*
+() Tj
+T*
+(1. **Supervised multi-class classification**) Tj
+T*
+(The model maps one input text to exactly one label among 77 classes.) Tj
+T*
+(Where: notebook code generated in `generate_notebook.py` \(`NUM_LABELS`, `id2label`, ) Tj
+T*
+(`label2id`\).) Tj
+T*
+() Tj
+T*
+(2. **Transfer learning / fine-tuning**) Tj
+T*
+(A pretrained language model \(`distilbert-base-uncased`\) is adapted to this specific intent task) Tj
+T*
+( with a new classification head.) Tj
+T*
+(Where: `build_model\(\)` in generated notebook code.) Tj
+T*
+() Tj
+T*
+(3. **Functional pipeline style**) Tj
+T*
+(Processing is split into small functions that pass explicit data structures \(`set_seed`, ) Tj
+T*
+(`encode`, `make_optimizer`, `evaluate`, `metrics_from_logits`, notebook `predict`; and in CLI ) Tj
+T*
+(`load_model`, `read_inputs`, `predict`\).) Tj
+T*
+() Tj
+T*
+(4. **Configuration via dataclass**) Tj
+T*
+(Training hyperparameters and paths are centralized in `Config` dataclass \(for example ) Tj
+T*
+(`max_len`, `epochs`, `lr`, `warmup_ratio`, `ckpt_dir`, `fig_dir`\).) Tj
+T*
+(Where: generated notebook code in `generate_notebook.py`.) Tj
+T*
+() Tj
+T*
+(5. **Artifact-contract pattern**) Tj
+T*
+(Training produces artifacts consumed by inference:) Tj
+T*
+(- `checkpoints/best_model.pt` \(raw PyTorch checkpoint dict\)) Tj
+T*
+(- `checkpoints/best_model/` \(HuggingFace `save_pretrained` directory for model+tokenizer\)) Tj
+T*
+(Inference loads `checkpoints/best_model/` by default.) Tj
+T*
+() Tj
+T*
+(6. **Selective prediction pattern**) Tj
+T*
+(The notebook evaluates confidence-based routing \(coverage vs. accuracy\) to support human ) Tj
+T*
+(fallback on low-confidence predictions.) Tj
+T*
+(Where: confidence analysis section in generated notebook code.) Tj
+T*
+() Tj
+T*
+(### 1.3 Architecture Description \(Components + Interactions\)) Tj
+T*
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 2990 >>
+stream
+BT
+/F1 10 Tf
+13 TL
+50 742 Td
+(Main components:) Tj
+T*
+() Tj
+T*
+(- `generate_notebook.py`) Tj
+T*
+(Builds notebook cells and writes `pytorch_distilbert_complaint_classifier.ipynb`.) Tj
+T*
+() Tj
+T*
+(- `pytorch_distilbert_complaint_classifier.ipynb`) Tj
+T*
+(Runs the full ML lifecycle:) Tj
+T*
+(data load -> split -> tokenization -> dataloaders -> model training -> checkpointing -> test ) Tj
+T*
+(evaluation -> error/confidence analysis -> baseline comparison.) Tj
+T*
+() Tj
+T*
+(- `inference.py`) Tj
+T*
+(Standalone prediction CLI. Loads saved HF model+tokenizer and returns top-k intent ) Tj
+T*
+(probabilities for text input\(s\).) Tj
+T*
+() Tj
+T*
+(- `pyproject.toml`) Tj
+T*
+(Declares Python/package dependencies and pins `torch` to the `pytorch-cu128` UV index.) Tj
+T*
+() Tj
+T*
+(- Runtime artifact folders \(created during notebook execution\): `checkpoints/`, `figures/`.) Tj
+T*
+() Tj
+T*
+(ASCII flow diagram:) Tj
+T*
+() Tj
+T*
+(```text) Tj
+T*
+(                        +----------------------+) Tj
+T*
+(                        | generate_notebook.py |) Tj
+T*
+(                        | \(md\(\), code\(\), cells\)|) Tj
+T*
+(                        +----------+-----------+) Tj
+T*
+(                                   |) Tj
+T*
+(                                   v) Tj
+T*
+(        +------------------------------------------------------+) Tj
+T*
+(        | pytorch_distilbert_complaint_classifier.ipynb        |) Tj
+T*
+(        | 1\) load_dataset\(PolyAI/banking77, parquet revision\)  |) Tj
+T*
+(        | 2\) split train/val/test                              |) Tj
+T*
+(        | 3\) tokenize + Banking77Dataset + DataLoader          |) Tj
+T*
+(        | 4\) build_model\(\) + make_optimizer\(\) + scheduler      |) Tj
+T*
+(        | 5\) train loop + evaluate\(\) + metrics_from_logits\(\)   |) Tj
+T*
+(        | 6\) save best checkpoint + HF model/tokenizer         |) Tj
+T*
+(        +-------------------+----------------+-----------------+) Tj
+T*
+(                            |                |) Tj
+T*
+(                            v                v) Tj
+T*
+(             +---------------------------+  +------------------+) Tj
+T*
+(             | checkpoints/best_model.pt |  | checkpoints/     |) Tj
+T*
+(             | raw state_dict + metadata |  | best_model/      |) Tj
+T*
+(             +---------------------------+  | HF format         |) Tj
+T*
+(                                            +---------+--------+) Tj
+T*
+(                                                      |) Tj
+T*
+(                                                      v) Tj
+T*
+(                                           +--------------------+) Tj
+T*
+(                                           | inference.py CLI   |) Tj
+T*
+(                                           | load_model\(\)       |) Tj
+T*
+(                                           | read_inputs\(\)      |) Tj
+T*
+(                                           | predict\(\)          |) Tj
+T*
+(                                           +--------------------+) Tj
+T*
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 3166 >>
+stream
+BT
+/F1 10 Tf
+13 TL
+50 742 Td
+(```) Tj
+T*
+() Tj
+T*
+(## Module 2: Repository Map) Tj
+T*
+() Tj
+T*
+(Focus files new contributors should understand first:) Tj
+T*
+() Tj
+T*
+(| File/Directory Path | Primary Responsibility | Key Classes/Functions | Important ) Tj
+T*
+(Configs/Variables |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| `README.md` | Project-level explanation, setup, run commands, expected artifacts and metrics ) Tj
+T*
+(| N/A \(documentation\) | Dataset split counts, training settings table, run commands, artifact ) Tj
+T*
+(paths |) Tj
+T*
+(| `pyproject.toml` | Python project metadata and dependency specification | N/A | ) Tj
+T*
+(`[project].requires-python = ">=3.12.10"`, dependency list, `[tool.uv.sources]`, ) Tj
+T*
+(`[[tool.uv.index]]` with `pytorch-cu128` |) Tj
+T*
+(| `.python-version` | Local Python version pin | N/A | `3.12.10` |) Tj
+T*
+(| `.gitignore` | Excludes generated/runtime artifacts from git | N/A | Ignores `.venv/`, ) Tj
+T*
+(`checkpoints/best_model/`, `checkpoints/*.pt`, `figures/*.png`, `data/`, etc. |) Tj
+T*
+(| `generate_notebook.py` | Source-of-truth notebook generator using `nbformat` | `md`, `code` ) Tj
+T*
+(\(generator helpers\); embedded notebook functions include `set_seed`, `encode`, ) Tj
+T*
+(`Banking77Dataset`, `build_model`, `make_optimizer`, `evaluate`, `metrics_from_logits`, ) Tj
+T*
+(`show_confusions`, notebook `predict` | `SEED`, `Config` fields \(`model_name`, `dataset`, ) Tj
+T*
+(`dataset_rev`, `max_len`, `batch_size`, `eval_batch`, `epochs`, `lr`, `weight_decay`, ) Tj
+T*
+(`warmup_ratio`, `max_grad_norm`, `val_size`, `ckpt_dir`, `fig_dir`\) |) Tj
+T*
+(| `pytorch_distilbert_complaint_classifier.ipynb` | Executed training/evaluation artifact with ) Tj
+T*
+(outputs, plots, and metrics | Same runtime functions generated by `generate_notebook.py`; ) Tj
+T*
+(sequential notebook execution cells | Recorded outputs \(for example: best val macro-F1 ) Tj
+T*
+(`0.9208`, test accuracy `0.9234`\) |) Tj
+T*
+(| `inference.py` | CLI inference entrypoint for single and batch predictions | `load_model`, ) Tj
+T*
+(`predict`, `read_inputs`, `main` | CLI args: `--text`, `--input`, `--model-dir`, `--output`, ) Tj
+T*
+(`--top-k`, `--max-len`, `--device`; defaults include `model-dir=checkpoints/best_model`, ) Tj
+T*
+(`max_len=64`, `top_k=3` |) Tj
+T*
+(| `uv.lock` | Locked dependency resolution for reproducibility | N/A | Exact pinned dependency ) Tj
+T*
+(graph for `uv` |) Tj
+T*
+() Tj
+T*
+(## Module 3: Core Execution Flows) Tj
+T*
+() Tj
+T*
+(### Flow A: Notebook Generation \(`generate_notebook.py`\)) Tj
+T*
+() Tj
+T*
+(Entry point behavior:) Tj
+T*
+(1. Defines helper wrappers:) Tj
+T*
+(   - `md\(src: str\) -> nbf.NotebookNode`) Tj
+T*
+(   - `code\(src: str\) -> nbf.NotebookNode`) Tj
+T*
+(2. Builds a `cells` list containing markdown/code cell payloads for the full tutorial pipeline.) Tj
+T*
+(3. Creates notebook object and metadata:) Tj
+T*
+(   - `nb = nbf.v4.new_notebook\(\)`) Tj
+T*
+(   - `nb["cells"] = cells`) Tj
+T*
+(   - kernelspec and language info \(`python 3.12.10`\)) Tj
+T*
+(4. Writes to:) Tj
+T*
+(   - `Path\(__file__\).parent / "pytorch_distilbert_complaint_classifier.ipynb"`) Tj
+T*
+() Tj
+T*
+(Short code fragment \(actual\):) Tj
+T*
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 2264 >>
+stream
+BT
+/F1 10 Tf
+13 TL
+50 742 Td
+() Tj
+T*
+(```python) Tj
+T*
+(nb = nbf.v4.new_notebook\(\)) Tj
+T*
+(nb["cells"] = cells) Tj
+T*
+(out_path = Path\(__file__\).parent / "pytorch_distilbert_complaint_classifier.ipynb") Tj
+T*
+(nbf.write\(nb, out_path\)) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(Input/Output shape:) Tj
+T*
+(- Input: no external runtime inputs \(beyond script source itself\).) Tj
+T*
+(- Output: one notebook file containing all training/evaluation logic and narrative cells.) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(### Flow B: Training + Evaluation Pipeline \(Notebook Runtime Path\)) Tj
+T*
+() Tj
+T*
+(This flow is implemented as code inside notebook cells generated by `generate_notebook.py`.) Tj
+T*
+() Tj
+T*
+(#### Step 1: Reproducibility and device policy) Tj
+T*
+(- `set_seed\(\)` sets seeds for Python, NumPy, Torch CPU/CUDA.) Tj
+T*
+(- Device selection: CUDA if available else CPU.) Tj
+T*
+(- Mixed precision policy:) Tj
+T*
+(  - bf16 when `torch.cuda.is_bf16_supported\(\)`) Tj
+T*
+(  - else fp16 + `GradScaler`) Tj
+T*
+(  - else fp32 on CPU) Tj
+T*
+() Tj
+T*
+(#### Step 2: Configuration) Tj
+T*
+(- `Config` dataclass centralizes run settings.) Tj
+T*
+(- Notable defaults:) Tj
+T*
+(  - `model_name="distilbert-base-uncased"`) Tj
+T*
+(  - `dataset="PolyAI/banking77"`) Tj
+T*
+(  - `dataset_rev="refs/convert/parquet"`) Tj
+T*
+(  - `max_len=64`, `batch_size=32`, `eval_batch=64`) Tj
+T*
+(  - `epochs=8`, `lr=5e-5`, `warmup_ratio=0.1`) Tj
+T*
+(  - `weight_decay=0.01`, `max_grad_norm=1.0`) Tj
+T*
+(  - `val_size=0.10`, `seed=42`) Tj
+T*
+(  - `ckpt_dir=Path\("checkpoints"\)`, `fig_dir=Path\("figures"\)`) Tj
+T*
+() Tj
+T*
+(#### Step 3: Data loading and label maps) Tj
+T*
+(- Loads dataset:) Tj
+T*
+(  - `raw = load_dataset\(cfg.dataset, revision=cfg.dataset_rev\)`) Tj
+T*
+(- Constructs label maps from `ClassLabel`:) Tj
+T*
+(  - `id2label: dict[int, str]`) Tj
+T*
+(  - `label2id: dict[str, int]`) Tj
+T*
+(- Data row shape from dataset:) Tj
+T*
+(  - `{"text": <str>, "label": <int>}`) Tj
+T*
+(- Committed notebook output shows:) Tj
+T*
+(  - `train: 10,003`, `test: 3,080`, `Num intents: 77`) Tj
+T*
+() Tj
+T*
+(#### Step 4: Split and tokenize) Tj
+T*
+(- Creates validation split from train with stratification:) Tj
+T*
+(  - `train_test_split\(..., test_size=cfg.val_size, stratify=train_lbls_all, ) Tj
+T*
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 2092 >>
+stream
+BT
+/F1 10 Tf
+13 TL
+50 742 Td
+(  random_state=cfg.seed\)`) Tj
+T*
+(- Uses `encode\(texts\)` wrapper around tokenizer with truncation to `max_len`.) Tj
+T*
+(- Committed notebook output split counts:) Tj
+T*
+(  - `train: 9,002`, `val: 1,001`, `test: 3,080`) Tj
+T*
+() Tj
+T*
+(#### Step 5: Dataset/DataLoader construction) Tj
+T*
+(- `Banking77Dataset.__getitem__` returns:) Tj
+T*
+() Tj
+T*
+(```python) Tj
+T*
+({) Tj
+T*
+(  "input_ids": <list[int]>,) Tj
+T*
+(  "attention_mask": <list[int]>,) Tj
+T*
+(  "labels": <int>) Tj
+T*
+(}) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(- `DataCollatorWithPadding\(..., return_tensors="pt"\)` produces padded batch tensors.) Tj
+T*
+(- Committed notebook output example batch:) Tj
+T*
+(  - keys: `['input_ids', 'attention_mask', 'labels']`) Tj
+T*
+(  - `input_ids` shape: `\(32, 53\)` \(batch, padded_len\)) Tj
+T*
+(  - `labels` shape: `\(32,\)`) Tj
+T*
+() Tj
+T*
+(#### Step 6: Model, optimizer, scheduler) Tj
+T*
+(- `build_model\(\)` initializes `AutoModelForSequenceClassification` with:) Tj
+T*
+(  - `num_labels=NUM_LABELS`) Tj
+T*
+(  - `id2label`, `label2id`) Tj
+T*
+(- `make_optimizer\(\)` builds AdamW parameter groups:) Tj
+T*
+(  - with weight decay for most params) Tj
+T*
+(  - zero decay for `"bias"` and `"LayerNorm.weight"`) Tj
+T*
+(- Scheduler:) Tj
+T*
+(  - `get_linear_schedule_with_warmup\(optimizer, warmup_steps, total_steps\)`) Tj
+T*
+() Tj
+T*
+(#### Step 7: Training loop + checkpoint selection) Tj
+T*
+(- For each epoch:) Tj
+T*
+(  - forward under `autocast`) Tj
+T*
+(  - backward \(`GradScaler` branch for fp16\)) Tj
+T*
+(  - `clip_grad_norm_`) Tj
+T*
+(  - optimizer step + scheduler step) Tj
+T*
+(- Per epoch validation:) Tj
+T*
+(  - `evaluate\(model, val_loader\)` returns `\(loss, logits, labels\)`) Tj
+T*
+(  - `metrics_from_logits\(...\)` returns:) Tj
+T*
+(    - `accuracy`) Tj
+T*
+(    - `macro_f1`) Tj
+T*
+(    - `weighted_f1`) Tj
+T*
+(- Checkpoint criterion:) Tj
+T*
+(  - save only when current `macro_f1` exceeds `best_f1`) Tj
+T*
+() Tj
+T*
+(Raw checkpoint payload keys \(`best_model.pt`\):) Tj
+T*
+(- `epoch`) Tj
+T*
+(- `model_state_dict`) Tj
+T*
+(- `id2label`) Tj
+T*
+(- `label2id`) Tj
+T*
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 2046 >>
+stream
+BT
+/F1 10 Tf
+13 TL
+50 742 Td
+(- `model_name`) Tj
+T*
+(- `max_len`) Tj
+T*
+(- `val_metrics`) Tj
+T*
+() Tj
+T*
+(Also saves HF format:) Tj
+T*
+(- `model.save_pretrained\(hf_dir\)`) Tj
+T*
+(- `tokenizer.save_pretrained\(hf_dir\)`) Tj
+T*
+() Tj
+T*
+(Committed notebook outputs include:) Tj
+T*
+(- `Total optimisation steps: 2256 \(warmup 225\)`) Tj
+T*
+(- `Best val macro-F1 = 0.9208` \(epoch 5\)) Tj
+T*
+() Tj
+T*
+(#### Step 8: Test evaluation + analysis + baseline) Tj
+T*
+(- Reloads best checkpoint \(`torch.load`\) into `best_model`.) Tj
+T*
+(- Runs held-out test metrics.) Tj
+T*
+(- Committed outputs:) Tj
+T*
+(  - `loss: 0.2989`) Tj
+T*
+(  - `accuracy: 0.9234`) Tj
+T*
+(  - `macro-F1: 0.9233`) Tj
+T*
+(  - `weighted-F1: 0.9233`) Tj
+T*
+(- Computes:) Tj
+T*
+(  - per-class report \(`classification_report`\)) Tj
+T*
+(  - confusion matrix \(`confusion_matrix`\)) Tj
+T*
+(  - top confusion pairs) Tj
+T*
+(  - confidence/coverage analysis) Tj
+T*
+(  - classical baseline \(`TfidfVectorizer` + `LogisticRegression`\)) Tj
+T*
+() Tj
+T*
+(Committed baseline comparison output:) Tj
+T*
+(- `TF-IDF + LogReg`: accuracy `0.8899`, macro-F1 `0.8903`, weighted-F1 `0.8903`) Tj
+T*
+(- `DistilBERT \(fine-tuned\)`: accuracy `0.9234`, macro-F1 `0.9233`, weighted-F1 `0.9233`) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(### Flow C: CLI Inference \(`inference.py`\)) Tj
+T*
+() Tj
+T*
+(Entrypoint: `main\(\)`) Tj
+T*
+() Tj
+T*
+(Step-by-step:) Tj
+T*
+(1. Parse CLI args with mutually exclusive source:) Tj
+T*
+(   - `--text` \(single query\) or `--input` \(file path\).) Tj
+T*
+(2. Resolve device:) Tj
+T*
+(   - `auto` => CUDA if available else CPU.) Tj
+T*
+(3. `load_model\(Path\(args.model_dir\), device\)`:) Tj
+T*
+(   - exits if model directory missing) Tj
+T*
+(   - loads tokenizer/model from HF directory) Tj
+T*
+(4. Read inputs:) Tj
+T*
+(   - `--text`: one-item list) Tj
+T*
+(   - `--input`: `read_inputs\(path\)`) Tj
+T*
+(     - `.csv` requires `text` column) Tj
+T*
+(     - otherwise treated as line-based text file) Tj
+T*
+(5. Run `predict\(...\)`:) Tj
+T*
+(   - tokenization with truncation/padding) Tj
+T*
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 2287 >>
+stream
+BT
+/F1 10 Tf
+13 TL
+50 742 Td
+(   - forward pass -> logits -> softmax) Tj
+T*
+(   - top-k selection \(clipped to number of labels\)) Tj
+T*
+(6. Print per-query top-k predictions.) Tj
+T*
+(7. Optional CSV output when `--output` is provided.) Tj
+T*
+() Tj
+T*
+(`predict\(...\)` return type shape:) Tj
+T*
+(- `List[List[Tuple[str, float]]]`) Tj
+T*
+(- Outer list length = number of input texts) Tj
+T*
+(- Inner list length = `top_k` \(or num_labels if smaller\)) Tj
+T*
+(- Tuple format = `\(intent_name, probability\)`) Tj
+T*
+() Tj
+T*
+(Batch CSV output schema from `main\(\)`:) Tj
+T*
+(- required columns always written:) Tj
+T*
+(  - `text`) Tj
+T*
+(  - `predicted_intent`) Tj
+T*
+(  - `confidence`) Tj
+T*
+(- additional per-rank columns:) Tj
+T*
+(  - `top{rank}_intent`) Tj
+T*
+(  - `top{rank}_prob`) Tj
+T*
+() Tj
+T*
+(For default `--top-k 3`, output includes:) Tj
+T*
+(- `top1_intent`, `top1_prob`) Tj
+T*
+(- `top2_intent`, `top2_prob`) Tj
+T*
+(- `top3_intent`, `top3_prob`) Tj
+T*
+() Tj
+T*
+(## Module 4: Setup & Run Guide) Tj
+T*
+() Tj
+T*
+(### 4.1 Clean-Machine Prerequisites) Tj
+T*
+(- Shell context: README commands are provided in bash style.) Tj
+T*
+(- Python: `3.12.10` \(from `.python-version`, and `>=3.12.10` in `pyproject.toml`\).) Tj
+T*
+(- Package/tool manager: `uv` \(project is configured for `uv` workflow\).) Tj
+T*
+(- Optional acceleration: NVIDIA GPU \(CUDA 12.8 wheel index configured for torch\).) Tj
+T*
+() Tj
+T*
+(### 4.2 Dependency Installation) Tj
+T*
+(Typical sequence from README:) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(git clone https://github.com/pypi-ahmad/pytorch-distilbert-complaint-classifier.git) Tj
+T*
+(cd pytorch-distilbert-complaint-classifier) Tj
+T*
+(uv sync) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(What `uv sync` uses:) Tj
+T*
+(- `pyproject.toml` dependency list:) Tj
+T*
+(  - `torch`, `transformers`, `datasets`, `accelerate`, `numpy`, `pandas`, `scikit-learn`, ) Tj
+T*
+(  `matplotlib`, `seaborn`, `jupyter`, `ipykernel`, `nbformat`, `tqdm`) Tj
+T*
+(- `tool.uv` torch source override:) Tj
+T*
+(  - `pytorch-cu128` index \(`https://download.pytorch.org/whl/cu128`\)) Tj
+T*
+() Tj
+T*
+(### 4.3 Configuration and Environment Variables) Tj
+T*
+(- `.env` keys: none required by current codebase.) Tj
+T*
+(- Environment variables in code: none referenced in `generate_notebook.py` or `inference.py`.) Tj
+T*
+ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 1941 >>
+stream
+BT
+/F1 10 Tf
+13 TL
+50 742 Td
+(- Primary config surfaces:) Tj
+T*
+(  - `pyproject.toml` for dependency/runtime requirements) Tj
+T*
+(  - `Config` dataclass in notebook code for training hyperparameters/paths) Tj
+T*
+(  - CLI flags in `inference.py` for inference-time behavior) Tj
+T*
+() Tj
+T*
+(### 4.4 Typical Command Sequences) Tj
+T*
+() Tj
+T*
+(1. Regenerate notebook from source script:) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(uv run python generate_notebook.py) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(2. Run training/evaluation notebook:) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(uv run jupyter lab pytorch_distilbert_complaint_classifier.ipynb) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(Or headless execution:) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(uv run jupyter nbconvert --to notebook --execute --inplace ) Tj
+T*
+(pytorch_distilbert_complaint_classifier.ipynb) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(3. Run inference after training artifacts exist:) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(uv run python inference.py --text "My card still hasn't arrived") Tj
+T*
+(uv run python inference.py --input queries.txt --top-k 3) Tj
+T*
+(uv run python inference.py --input queries.csv --output predictions.csv) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(### 4.5 Migrations / Seeding / External Services) Tj
+T*
+(- Database migrations: none \(no DB in this repository\).) Tj
+T*
+(- Seeding scripts: none beyond ML random seed setup in notebook code.) Tj
+T*
+(- External downloads happen at runtime when executing notebook/inference:) Tj
+T*
+(  - HuggingFace model/tokenizer \(`distilbert-base-uncased`\)) Tj
+T*
+(  - Banking77 dataset from `PolyAI/banking77` parquet revision.) Tj
+T*
+() Tj
+T*
+(### 4.6 Export This Handbook to PDF) Tj
+T*
+(Example command \(not executed in this analysis run\):) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(pandoc ZERO_TO_HERO_STUDY_HANDBOOK.md -o ZERO_TO_HERO_STUDY_HANDBOOK.pdf) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(## Module 5: Study Plan & Practice Exercises) Tj
+T*
+() Tj
+T*
+(### 5.1 Ordered Study Plan) Tj
+T*
+() Tj
+T*
+ET
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<< /Length 2365 >>
+stream
+BT
+/F1 10 Tf
+13 TL
+50 742 Td
+(1. Start with `README.md`) Tj
+T*
+(Goal: understand problem framing, expected metrics, and run workflow.) Tj
+T*
+() Tj
+T*
+(2. Read `pyproject.toml` and `.python-version`) Tj
+T*
+(Goal: understand runtime/dependency contract and CUDA torch index pinning.) Tj
+T*
+() Tj
+T*
+(3. Read `inference.py` top-to-bottom) Tj
+T*
+(Goal: understand the serving/prediction contract and exact I/O schema.) Tj
+T*
+() Tj
+T*
+(4. Read `generate_notebook.py` structure) Tj
+T*
+(Goal: understand why notebook is generated, and how `md\(\)` + `code\(\)` compose a reproducible ) Tj
+T*
+(notebook.) Tj
+T*
+() Tj
+T*
+(5. Deep read notebook runtime sections in generated code \(inside `generate_notebook.py`\)) Tj
+T*
+(Order:) Tj
+T*
+(- Reproducibility/device) Tj
+T*
+(- `Config`) Tj
+T*
+(- data loading/splitting/tokenization) Tj
+T*
+(- `Banking77Dataset` + dataloaders) Tj
+T*
+(- model/optimizer/scheduler) Tj
+T*
+(- train/evaluate/checkpoint loop) Tj
+T*
+(- test evaluation/confusion/confidence/baseline) Tj
+T*
+() Tj
+T*
+(6. Open `pytorch_distilbert_complaint_classifier.ipynb` outputs) Tj
+T*
+(Goal: connect code paths to concrete numeric outputs and artifacts.) Tj
+T*
+() Tj
+T*
+(### 5.2 Practice Exercises \(with Solution Outlines\)) Tj
+T*
+() Tj
+T*
+(#### Exercise 1) Tj
+T*
+(Question: Which function in `inference.py` enforces that a CSV input must contain a `text` ) Tj
+T*
+(column, and what happens if it is missing?) Tj
+T*
+() Tj
+T*
+(Solution outline:) Tj
+T*
+(- Function: `read_inputs\(path: Path\)`.) Tj
+T*
+(- Branch: when `path.suffix.lower\(\) == ".csv"`.) Tj
+T*
+(- It checks `"text" in df.columns`; if missing, it calls `sys.exit\(...\)` with an error message ) Tj
+T*
+(listing found columns.) Tj
+T*
+() Tj
+T*
+(#### Exercise 2) Tj
+T*
+(Question: Trace how label IDs become readable intent names during inference.) Tj
+T*
+() Tj
+T*
+(Solution outline:) Tj
+T*
+(- Notebook training code builds `id2label` and passes it into model config via `build_model\(\)`.) Tj
+T*
+(- Saved HF artifacts preserve this mapping.) Tj
+T*
+(- `inference.py` reads `model.config.id2label` in `predict\(\)`.) Tj
+T*
+(- Top-k indices are converted to strings with `id2label[int\(i\)]`.) Tj
+T*
+() Tj
+T*
+(#### Exercise 3) Tj
+T*
+(Question: What is the exact checkpoint selection rule in training?) Tj
+T*
+() Tj
+T*
+(Solution outline:) Tj
+T*
+(- In training loop, after validation metrics, condition is:) Tj
+T*
+ET
+endstream
+endobj
+22 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 2207 >>
+stream
+BT
+/F1 10 Tf
+13 TL
+50 742 Td
+(  - `if m["macro_f1"] > best_f1:`) Tj
+T*
+(- So best model is selected strictly by validation macro-F1, not accuracy and not loss.) Tj
+T*
+() Tj
+T*
+(#### Exercise 4) Tj
+T*
+(Question: What keys are stored in `checkpoints/best_model.pt`?) Tj
+T*
+() Tj
+T*
+(Solution outline:) Tj
+T*
+(- `epoch`) Tj
+T*
+(- `model_state_dict`) Tj
+T*
+(- `id2label`) Tj
+T*
+(- `label2id`) Tj
+T*
+(- `model_name`) Tj
+T*
+(- `max_len`) Tj
+T*
+(- `val_metrics`) Tj
+T*
+() Tj
+T*
+(#### Exercise 5) Tj
+T*
+(Question: Explain the difference between `checkpoints/best_model.pt` and ) Tj
+T*
+(`checkpoints/best_model/`.) Tj
+T*
+() Tj
+T*
+(Solution outline:) Tj
+T*
+(- `best_model.pt`: raw torch checkpoint dict, useful for manual load/inspection.) Tj
+T*
+(- `best_model/`: HuggingFace `save_pretrained` directory containing model and tokenizer files.) Tj
+T*
+(- `inference.py` default loader uses HF directory \(`--model-dir` default is ) Tj
+T*
+(`checkpoints/best_model`\).) Tj
+T*
+() Tj
+T*
+(#### Exercise 6) Tj
+T*
+(Question: In the notebook, what data structure does `Banking77Dataset.__getitem__` return, and ) Tj
+T*
+(why does it matter for the model call?) Tj
+T*
+() Tj
+T*
+(Solution outline:) Tj
+T*
+(- Returns dict with keys `input_ids`, `attention_mask`, `labels`.) Tj
+T*
+(- This shape matches expected keyword arguments for `AutoModelForSequenceClassification` ) Tj
+T*
+(forward pass \(`model\(**batch\)`\).) Tj
+T*
+() Tj
+T*
+(#### Exercise 7) Tj
+T*
+(Question: Why does this project use `dataset_rev="refs/convert/parquet"` when loading ) Tj
+T*
+(Banking77?) Tj
+T*
+() Tj
+T*
+(Solution outline:) Tj
+T*
+(- Explicitly documented in README and notebook markdown:) Tj
+T*
+(  - `datasets >= 5` dropped script-based loader support for the original dataset repo.) Tj
+T*
+(  - parquet revision is used for compatibility while keeping label metadata.) Tj
+T*
+() Tj
+T*
+(#### Exercise 8) Tj
+T*
+(Question: What are the default inference-time controls for sequence length, number of ) Tj
+T*
+(predictions, and execution device?) Tj
+T*
+() Tj
+T*
+(Solution outline:) Tj
+T*
+(- In `inference.py` parser defaults:) Tj
+T*
+(  - `--max-len`: `64`) Tj
+T*
+(  - `--top-k`: `3`) Tj
+T*
+(  - `--device`: `"auto"` \(chooses CUDA if available else CPU\)) Tj
+T*
+ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 1177 >>
+stream
+BT
+/F1 10 Tf
+13 TL
+50 742 Td
+() Tj
+T*
+(### 5.3 Learner Self-Verification Checklist) Tj
+T*
+() Tj
+T*
+(Use this checklist after finishing all modules:) Tj
+T*
+() Tj
+T*
+(- Can you explain the end-to-end artifact pipeline from `generate_notebook.py` to ) Tj
+T*
+(`inference.py`?) Tj
+T*
+(- Can you describe the exact training selection criterion and why macro-F1 is used?) Tj
+T*
+(- Can you list all fields in the raw checkpoint dict and explain what consumes each?) Tj
+T*
+(- Can you state the exact input requirements for `inference.py` batch CSV mode?) Tj
+T*
+(- Can you reconstruct the shape of a training batch \(`input_ids`, `attention_mask`, `labels`\)?) Tj
+T*
+(- Can you explain how `id2label`/`label2id` are created and propagated into inference outputs?) Tj
+T*
+(- Can you identify where torch dependency source pinning is configured and why?) Tj
+T*
+(- Can you explain the confidence-threshold routing idea implemented in the notebook analysis ) Tj
+T*
+(cells?) Tj
+T*
+(- Can you reproduce the major held-out test metrics reported in the committed notebook outputs?) Tj
+T*
+(- Can you point to the single place where training hyperparameters are centralized \(`Config`\)?) Tj
+T*
+ET
+endstream
+endobj
+xref
+0 26
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000190 00000 n 
+0000000258 00000 n 
+0000000384 00000 n 
+0000003332 00000 n 
+0000003458 00000 n 
+0000006499 00000 n 
+0000006625 00000 n 
+0000009842 00000 n 
+0000009970 00000 n 
+0000012286 00000 n 
+0000012414 00000 n 
+0000014558 00000 n 
+0000014686 00000 n 
+0000016784 00000 n 
+0000016912 00000 n 
+0000019251 00000 n 
+0000019379 00000 n 
+0000021372 00000 n 
+0000021500 00000 n 
+0000023917 00000 n 
+0000024045 00000 n 
+0000026304 00000 n 
+0000026432 00000 n 
+trailer
+<< /Size 26 /Root 1 0 R >>
+startxref
+27661
+%%EOF

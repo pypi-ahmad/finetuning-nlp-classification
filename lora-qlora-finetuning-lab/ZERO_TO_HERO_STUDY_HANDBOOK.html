@@ -1,0 +1,450 @@
+<h1>Zero to Hero Study Handbook: lora-qlora-finetuning-lab</h1>
+<p>This handbook is a static, file-grounded guide to help a new learner understand this repository from first principles and then work productively with it.</p>
+<h2>Module 1: Foundations &amp; Architecture</h2>
+<h3>What this project does</h3>
+<p>This project is a notebook-first NLP fine-tuning lab that compares two parameter-efficient tuning methods for emotion classification framed as text generation:</p>
+<ul>
+<li>LoRA on <code>distilgpt2</code></li>
+<li>QLoRA (4-bit quantized base model + LoRA adapters) on <code>facebook/opt-350m</code></li>
+</ul>
+<p>The task is based on the Hugging Face dataset <code>dair-ai/emotion</code>, where each input text is mapped to one label from:</p>
+<ul>
+<li><code>sadness</code></li>
+<li><code>joy</code></li>
+<li><code>love</code></li>
+<li><code>anger</code></li>
+<li><code>fear</code></li>
+<li><code>surprise</code></li>
+</ul>
+<p>The repository provides:</p>
+<ul>
+<li>A CLI for end-to-end runs (<code>run-all</code>) and app serving (<code>serve-app</code>)</li>
+<li>A core Python pipeline (<code>src/lora_qlora_lab/pipeline.py</code>) that runs data prep -&gt; baseline evaluation -&gt; training -&gt; tuned evaluation -&gt; reporting</li>
+<li>A Streamlit dashboard over generated artifacts</li>
+<li>Tutorial notebooks that inspect generated artifacts</li>
+<li>Tests for core utility behavior</li>
+</ul>
+<h3>Main use cases</h3>
+<ul>
+<li>Learn PEFT workflow structure end-to-end on a real repo.</li>
+<li>Compare LoRA vs QLoRA outputs, runtime, and metrics under one protocol.</li>
+<li>Re-run experiments with modified sampling/training settings via <code>.env</code>.</li>
+<li>Inspect artifacts in notebooks and the Streamlit app.</li>
+</ul>
+<h3>Core paradigms and patterns used here</h3>
+<ol>
+<li>Pipeline orchestration (imperative workflow):
+   One coordinator function, <code>run_pipeline(settings)</code>, executes all major stages in sequence.</li>
+<li>Config-driven runtime:
+   <code>Settings</code> (Pydantic <code>BaseSettings</code>) centralizes paths, model names, sample sizes, and training controls.</li>
+<li>Parameter-efficient transfer learning:
+   Adapter-based tuning (<code>peft</code>) instead of full model fine-tuning.</li>
+<li>Prompt-as-classification pattern:
+   Classification is cast as generation with deterministic prompts, then post-processed into labels.</li>
+<li>Artifact-first analytics:
+   CSV/JSON/HTML/Markdown outputs are persisted and then consumed by notebooks/app.</li>
+<li>Functional utility style with lightweight structured models:
+   Most logic is functional; <code>EvalRecord</code> dataclass is used for typed evaluation records.</li>
+</ol>
+<h3>Architecture and component interaction</h3>
+<p><code>text
+User/Automation
+   |
+   | CLI: lora-qlora-lab run-all   OR   scripts/run_pipeline.py
+   v
+src/lora_qlora_lab/cli.py
+   |
+   v
+run_pipeline(settings)  [src/lora_qlora_lab/pipeline.py]
+   |
+   +--&gt; load_emotion_splits() + sample_splits() + save_raw_splits()
+   |      [data/emotion_dataset.py]
+   |
+   +--&gt; build_eval_records() for baseline/tuned
+   |
+   +--&gt; evaluate_model() baseline LoRA
+   |
+   +--&gt; train_lora()
+   |      [training/fine_tune.py]
+   |
+   +--&gt; evaluate_model() tuned LoRA
+   |
+   +--&gt; evaluate_model() baseline QLoRA (4-bit)
+   |
+   +--&gt; train_qlora()
+   |
+   +--&gt; evaluate_model() tuned QLoRA
+   |
+   +--&gt; save_predictions(), save_metrics(), save_charts(),
+   |    render_markdown_report(), save_metrics_json()
+   |      [eval/inference.py + reporting/reporting.py]
+   |
+   v
+artifacts/ + models/
+   |
+   +--&gt; notebooks/*.ipynb (analysis/tutorial)
+   +--&gt; app/streamlit_app.py (dashboard)</code></p>
+<h2>Module 2: Repository Map</h2>
+<p>| File/Directory Path | Primary Responsibility | Key Classes/Functions | Important Configs/Variables |
+|---|---|---|---|
+| <code>pyproject.toml</code> | Package metadata, dependencies, CLI registration | <code>project.scripts: lora-qlora-lab = lora_qlora_lab.cli:app</code> | Python <code>&gt;=3.12.10,&lt;3.13</code>, runtime deps (<code>transformers</code>, <code>peft</code>, <code>bitsandbytes</code>, <code>torch</code>, etc.), pytest config |
+| <code>.env.example</code> | Environment/config template | N/A | <code>LORA_MODEL_NAME</code>, <code>QLORA_MODEL_NAME</code>, <code>DATASET_NAME</code>, <code>TRAIN_SAMPLES</code>, <code>VALIDATION_SAMPLES</code>, <code>TEST_SAMPLES</code>, <code>BASELINE_EVAL_SAMPLES</code>, <code>TUNED_EVAL_SAMPLES</code>, <code>MAX_LENGTH</code>, <code>LORA_MAX_STEPS</code>, <code>QLORA_MAX_STEPS</code>, <code>SEED</code>, <code>HF_TOKEN</code> |
+| <code>README.md</code> | Human-facing project overview and command quickstart | N/A | Canonical commands for setup, pipeline, notebooks, app |
+| <code>src/lora_qlora_lab/config.py</code> | Runtime settings model and path resolution | <code>Settings</code>, <code>get_settings</code>, <code>ensure_directories</code> | <code>dataset_name</code>, model names, sample sizes, step counts, seed, <code>hf_token</code> |
+| <code>src/lora_qlora_lab/cli.py</code> | Typer CLI entrypoints | <code>run_all_cmd</code>, <code>serve_app_cmd</code>, <code>callback</code> | CLI commands: <code>run-all</code>, <code>serve-app</code>; Streamlit port default <code>8502</code> |
+| <code>src/lora_qlora_lab/pipeline.py</code> | End-to-end orchestration | <code>run_pipeline</code>, <code>_save_json</code> | Calls all major modules; summary payload shape |
+| <code>src/lora_qlora_lab/data/emotion_dataset.py</code> | Dataset loading, prompt construction, split sampling, tokenization | <code>EvalRecord</code>, <code>LABELS</code>, <code>build_prompt</code>, <code>build_train_text</code>, <code>extract_label</code>, <code>load_emotion_splits</code>, <code>sample_splits</code>, <code>tokenize_for_causal_lm</code> | Label order defines ID-&gt;label decoding; deterministic shuffle via <code>seed</code> |
+| <code>src/lora_qlora_lab/training/fine_tune.py</code> | LoRA and QLoRA training routines | <code>train_lora</code>, <code>train_qlora</code>, <code>_build_lora_config</code>, <code>_target_modules_for_model</code> | LoRA hyperparams (<code>r=16</code>, <code>lora_alpha=32</code>, dropout <code>0.05</code>), QLoRA 4-bit config (<code>nf4</code>, double quant) |
+| <code>src/lora_qlora_lab/eval/inference.py</code> | Model loading, generation-based evaluation, metric computation | <code>evaluate_model</code>, <code>_load_model_and_tokenizer</code>, <code>save_predictions</code>, <code>eval_records_to_frame</code> | <code>max_new_tokens=4</code>, <code>do_sample=False</code>, sklearn <code>accuracy</code> + <code>macro_f1</code> |
+| <code>src/lora_qlora_lab/reporting/reporting.py</code> | Metrics delta calculation, chart/report generation, JSON-safe writing | <code>compute_deltas</code>, <code>save_metrics</code>, <code>save_metrics_json</code>, <code>save_charts</code>, <code>render_markdown_report</code> | Jinja2 markdown template, Plotly HTML charts, NaN normalization via <code>_sanitize_for_json</code> |
+| <code>src/lora_qlora_lab/logging_utils.py</code> | Logger configuration | <code>configure_logging</code> | Loguru format + level <code>INFO</code> |
+| <code>scripts/run_pipeline.py</code> | Convenience script for full pipeline run | top-level script body | Uses <code>configure_logging()</code>, <code>get_settings()</code>, <code>run_pipeline()</code> |
+| <code>scripts/execute_notebooks.py</code> | Sequential notebook execution helper | <code>execute_notebook</code>, <code>main</code>, <code>NOTEBOOKS</code> | Notebook order and nbclient timeout (<code>1800</code>) |
+| <code>app/streamlit_app.py</code> | Visualization/dashboard for saved artifacts | top-level Streamlit app code | Reads <code>artifacts/metrics/summary.json</code>, <code>evaluation_metrics.csv</code>, <code>predictions.csv</code> |
+| <code>tests/test_prompts.py</code> | Validates prompt/text-label helpers | <code>test_prompt_and_train_text</code>, <code>test_extract_label</code> | Ensures <code>"Label:"</code> prompt suffix and unknown-label behavior |
+| <code>tests/test_sampling.py</code> | Validates split sampling limits | <code>test_sample_splits_respects_limits</code> | Checks requested sample caps per split |
+| <code>tests/test_reporting.py</code> | Validates metrics delta + JSON sanitization | <code>test_compute_deltas</code>, <code>test_save_metrics_json_normalizes_nan</code> | Confirms gain arithmetic and NaN-&gt;<code>null</code> conversion |
+| <code>data/raw/*.json</code> | Persisted sampled dataset splits | N/A | Row shape is <code>{"text": str, "label": int}</code> |
+| <code>models/lora_distilgpt2/</code> and <code>models/qlora_opt350m/</code> | Trained adapter outputs + training metrics | N/A | <code>adapter/adapter_model.safetensors</code>, <code>adapter_config.json</code>, <code>train_metrics.json</code> |
+| <code>artifacts/</code> | Evaluation/reporting outputs consumed by tutorials/app | N/A | <code>metrics/summary.json</code>, <code>tables/predictions.csv</code>, <code>charts/*.html</code>, <code>reports/lora_qlora_report.md</code> |
+| <code>notebooks/*.ipynb</code> | Tutorial-style artifact inspection notebooks | N/A | Ordered narrative from data/baselines to final comparison |</p>
+<h2>Module 3: Core Execution Flows</h2>
+<h3>Flow A: End-to-end CLI execution (<code>run-all</code>)</h3>
+<p>Entrypoint:</p>
+<ul>
+<li><code>uv run lora-qlora-lab run-all</code></li>
+<li>maps to <code>run_all_cmd()</code> in <code>src/lora_qlora_lab/cli.py</code></li>
+</ul>
+<p>Step-by-step:</p>
+<ol>
+<li><code>run_all_cmd()</code> loads settings via <code>get_settings()</code>.</li>
+<li><code>run_pipeline(settings)</code> is called.</li>
+<li>Pipeline sets seed (<code>transformers.set_seed(settings.seed)</code>) and creates directories (<code>settings.ensure_directories()</code>).</li>
+<li>Dataset is loaded from Hugging Face (<code>load_emotion_splits(settings.dataset_name, settings.seed)</code>), sampled (<code>sample_splits(...)</code>), and persisted to <code>data/raw/emotion_{train,validation,test}.json</code>.</li>
+<li>Two eval sets are prepared from sampled test split:</li>
+<li><code>baseline_records</code> with <code>settings.baseline_eval_samples</code></li>
+<li><code>tuned_records</code> with <code>settings.tuned_eval_samples</code></li>
+<li>Baseline and tuned records are saved under <code>artifacts/tables/</code>.</li>
+<li>Four evaluation/training branches run in order:</li>
+<li>Baseline LoRA model evaluation</li>
+<li>LoRA training -&gt; tuned LoRA evaluation</li>
+<li>Baseline QLoRA model evaluation</li>
+<li>QLoRA training -&gt; tuned QLoRA evaluation</li>
+<li>Metrics/predictions are aggregated into DataFrames.</li>
+<li>Artifacts are generated:</li>
+<li>predictions CSV</li>
+<li>metrics CSV</li>
+<li>Plotly charts (HTML)</li>
+<li>Markdown report</li>
+<li>summary JSON + per-method train-metrics JSON</li>
+<li>CLI prints <code>summary["deltas"]</code> JSON.</li>
+</ol>
+<p>Core orchestration snippet (actual structure):</p>
+<p><code>python
+summary = {
+    "dataset": settings.dataset_name,
+    "seed": settings.seed,
+    "lora_model": settings.lora_model_name,
+    "qlora_model": settings.qlora_model_name,
+    "results": results_df.to_dict(orient="records"),
+    "deltas": compute_deltas(results_df),
+    "lora_train_metrics": lora_train_metrics,
+    "qlora_train_metrics": qlora_train_metrics,
+}</code></p>
+<h3>Flow B: Data and prompt flow</h3>
+<p>Important functions:</p>
+<ul>
+<li><code>build_prompt(text: str) -&gt; str</code></li>
+<li><code>build_train_text(text: str, label: str) -&gt; str</code></li>
+<li><code>decode_label(label_id: int) -&gt; str</code></li>
+<li><code>extract_label(prediction: str) -&gt; str</code></li>
+<li><code>tokenize_for_causal_lm(dataset, tokenizer, max_length) -&gt; Dataset</code></li>
+</ul>
+<p>Prompt format used by training and evaluation:</p>
+<p><code>text
+Classify the emotion in the given text. Choose exactly one label from: sadness, joy, love, anger, fear, surprise.
+Text: &lt;original text&gt;
+Label:</code></p>
+<p>Label ID mapping comes directly from <code>LABELS</code> order in <code>emotion_dataset.py</code>:</p>
+<ul>
+<li><code>0 -&gt; sadness</code></li>
+<li><code>1 -&gt; joy</code></li>
+<li><code>2 -&gt; love</code></li>
+<li><code>3 -&gt; anger</code></li>
+<li><code>4 -&gt; fear</code></li>
+<li><code>5 -&gt; surprise</code></li>
+</ul>
+<p>Input/output shapes in this flow:</p>
+<ul>
+<li>Raw sampled row (<code>data/raw/*.json</code>):</li>
+<li><code>{"text": "&lt;string&gt;", "label": &lt;int&gt;}</code></li>
+<li>Evaluation record (<code>EvalRecord</code> dataclass):</li>
+<li><code>text: str</code></li>
+<li><code>gold_label: str</code></li>
+<li><code>prompt: str</code></li>
+</ul>
+<h3>Flow C: LoRA training flow (<code>train_lora</code>)</h3>
+<p>Function:</p>
+<ul>
+<li><code>train_lora(settings, sampled_splits, output_dir) -&gt; tuple[Path, dict[str, Any]]</code></li>
+</ul>
+<p>Key operations:</p>
+<ol>
+<li>Seed and output directory setup.</li>
+<li>Tokenizer load for <code>settings.lora_model_name</code>.</li>
+<li>Tokenize sampled train/validation splits with <code>tokenize_for_causal_lm</code>.</li>
+<li>Load base CausalLM with dtype:</li>
+<li><code>float16</code> if CUDA available</li>
+<li>else <code>float32</code></li>
+<li>Build and attach LoRA adapter config:</li>
+<li><code>r=16</code>, <code>lora_alpha=32</code>, <code>lora_dropout=0.05</code></li>
+<li>GPT-like target modules: <code>["c_attn", "c_proj"]</code></li>
+<li>Train with <code>Trainer</code> and <code>TrainingArguments</code> (<code>max_steps=settings.lora_max_steps</code>, batch size 8, grad accumulation 2).</li>
+<li>Save adapter + tokenizer under <code>models/lora_distilgpt2/adapter</code>.</li>
+<li>Save <code>train_metrics.json</code>, return <code>(adapter_dir, metrics_dict)</code>.</li>
+</ol>
+<p>Returned metrics dict shape:</p>
+<p><code>json
+{
+  "train": {"train_runtime": 0.0, "...": "..."},
+  "eval": {"eval_loss": 0.0, "...": "..."},
+  "model": "distilgpt2",
+  "method": "lora",
+  "train_samples": 1800,
+  "validation_samples": 300
+}</code></p>
+<h3>Flow D: QLoRA training flow (<code>train_qlora</code>)</h3>
+<p>Function:</p>
+<ul>
+<li><code>train_qlora(settings, sampled_splits, output_dir) -&gt; tuple[Path, dict[str, Any]]</code></li>
+</ul>
+<p>What differs from LoRA flow:</p>
+<ol>
+<li>Uses <code>settings.qlora_model_name</code> (<code>facebook/opt-350m</code> by default).</li>
+<li>Applies 4-bit quantization config:</li>
+<li><code>load_in_4bit=True</code></li>
+<li><code>bnb_4bit_quant_type="nf4"</code></li>
+<li><code>bnb_4bit_use_double_quant=True</code></li>
+<li><code>bnb_4bit_compute_dtype=torch.float16</code></li>
+<li>Calls <code>prepare_model_for_kbit_training(base_model)</code>.</li>
+<li>Uses smaller per-device batch sizes with higher accumulation:</li>
+<li>train batch size 2, eval batch size 2, grad accumulation 4</li>
+<li>Optimizer is set to <code>paged_adamw_8bit</code>.</li>
+<li>Saves adapter to <code>models/qlora_opt350m/adapter</code>.</li>
+</ol>
+<p>Target modules for OPT-like model names come from <code>_target_modules_for_model</code>:</p>
+<ul>
+<li><code>["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]</code></li>
+</ul>
+<h3>Flow E: Evaluation and post-processing flow</h3>
+<p>Function:</p>
+<ul>
+<li><code>evaluate_model(model_name, records, hf_token, run_name, adapter_path=None, quantized_4bit=False)</code></li>
+</ul>
+<p>Step-by-step:</p>
+<ol>
+<li><code>_load_model_and_tokenizer(...)</code> loads tokenizer and base model.</li>
+<li>Optional adapter injection with <code>PeftModel.from_pretrained</code> when <code>adapter_path</code> is provided.</li>
+<li>For each <code>EvalRecord</code>, the model generates up to 4 tokens (<code>max_new_tokens=4</code>, <code>do_sample=False</code>).</li>
+<li>Generated suffix is decoded as <code>raw_completion</code>.</li>
+<li><code>extract_label(raw_completion)</code> finds the first label substring from the label list; else returns <code>"unknown"</code>.</li>
+<li>Per-sample predictions are accumulated in a DataFrame.</li>
+<li>Metrics computed with sklearn:</li>
+<li><code>accuracy_score</code></li>
+<li><code>f1_score(..., average="macro", zero_division=0)</code></li>
+<li>Returns:</li>
+<li><code>metrics: dict[str, Any]</code></li>
+<li><code>predictions_df: pd.DataFrame</code></li>
+</ol>
+<p>Prediction row shape (<code>artifacts/tables/predictions.csv</code>):</p>
+<p><code>json
+{
+  "run_name": "tuned_lora",
+  "text": "...",
+  "gold_label": "sadness",
+  "raw_completion": "sadness, joy,",
+  "pred_label": "sadness"
+}</code></p>
+<p>Metrics row shape (<code>artifacts/metrics/evaluation_metrics.csv</code>):</p>
+<p><code>json
+{
+  "run_name": "tuned_qlora",
+  "model_name": "facebook/opt-350m",
+  "quantized_4bit": true,
+  "adapter_path": ".../models/qlora_opt350m/adapter",
+  "n_samples": 80,
+  "accuracy": 0.3625,
+  "macro_f1": 0.1404781929592695
+}</code></p>
+<h3>Flow F: Reporting and visualization flow</h3>
+<p>Important functions:</p>
+<ul>
+<li><code>compute_deltas(results_df)</code></li>
+<li><code>save_metrics(results_df, path)</code></li>
+<li><code>save_charts(results_df, chart_dir)</code></li>
+<li><code>render_markdown_report(...)</code></li>
+<li><code>save_metrics_json(payload, path)</code></li>
+</ul>
+<p>Artifacts generated by this flow:</p>
+<ul>
+<li><code>artifacts/metrics/evaluation_metrics.csv</code></li>
+<li><code>artifacts/metrics/summary.json</code></li>
+<li><code>artifacts/metrics/lora_train_metrics.json</code></li>
+<li><code>artifacts/metrics/qlora_train_metrics.json</code></li>
+<li><code>artifacts/charts/accuracy_by_run.html</code></li>
+<li><code>artifacts/charts/macro_f1_by_run.html</code></li>
+<li><code>artifacts/reports/lora_qlora_report.md</code></li>
+</ul>
+<p>Dashboard consumption path:</p>
+<ul>
+<li><code>app/streamlit_app.py</code> reads <code>summary.json</code> + <code>evaluation_metrics.csv</code></li>
+<li>Displays gain metrics and bar charts</li>
+<li>Optionally loads <code>predictions.csv</code> and provides run-level filtering</li>
+</ul>
+<h3>Flow G: Notebook tutorial path</h3>
+<p>Notebook order encoded in <code>scripts/execute_notebooks.py</code>:</p>
+<ol>
+<li><code>notebooks/01_data_and_baselines.ipynb</code></li>
+<li><code>notebooks/02_lora_finetuning_tutorial.ipynb</code></li>
+<li><code>notebooks/03_qlora_finetuning_tutorial.ipynb</code></li>
+<li><code>notebooks/04_comparison_and_report.ipynb</code></li>
+</ol>
+<p>In the current repo state, notebooks primarily inspect already-produced artifacts rather than re-implementing training code inline.</p>
+<h2>Module 4: Setup &amp; Run Guide</h2>
+<h3>Prerequisites for a clean machine</h3>
+<ul>
+<li>Linux/macOS shell</li>
+<li>Git</li>
+<li><code>uv</code></li>
+<li>Python <code>3.12.10</code> (project pin in <code>.python-version</code>)</li>
+<li>Optional GPU + CUDA for faster training/inference</li>
+</ul>
+<h3>Install and environment setup</h3>
+<p><code>bash
+git clone https://github.com/pypi-ahmad/lora-qlora-finetuning-lab.git
+cd lora-qlora-finetuning-lab
+uv python pin 3.12.10
+uv sync --dev
+cp .env.example .env</code></p>
+<h3>Required/optional environment variables (<code>.env</code>)</h3>
+<p>Core keys used by <code>Settings</code>:</p>
+<ul>
+<li><code>LORA_MODEL_NAME</code> (default: <code>distilgpt2</code>)</li>
+<li><code>QLORA_MODEL_NAME</code> (default: <code>facebook/opt-350m</code>)</li>
+<li><code>DATASET_NAME</code> (default: <code>dair-ai/emotion</code>)</li>
+<li><code>TRAIN_SAMPLES</code> (default: <code>1800</code>)</li>
+<li><code>VALIDATION_SAMPLES</code> (default: <code>300</code>)</li>
+<li><code>TEST_SAMPLES</code> (default: <code>300</code>)</li>
+<li><code>BASELINE_EVAL_SAMPLES</code> (default: <code>40</code>)</li>
+<li><code>TUNED_EVAL_SAMPLES</code> (default: <code>80</code>)</li>
+<li><code>MAX_LENGTH</code> (default: <code>192</code>)</li>
+<li><code>LORA_MAX_STEPS</code> (default: <code>30</code>)</li>
+<li><code>QLORA_MAX_STEPS</code> (default: <code>12</code>)</li>
+<li><code>SEED</code> (default: <code>42</code>)</li>
+<li><code>HF_TOKEN</code> (optional)</li>
+</ul>
+<h3>Typical command sequences</h3>
+<p>Run full pipeline:</p>
+<p><code>bash
+uv run lora-qlora-lab run-all</code></p>
+<p>Alternative convenience script:</p>
+<p><code>bash
+uv run python scripts/run_pipeline.py</code></p>
+<p>Run tutorial notebooks in order:</p>
+<p><code>bash
+uv run python scripts/execute_notebooks.py</code></p>
+<p>Run Streamlit dashboard:</p>
+<p><code>bash
+uv run lora-qlora-lab serve-app --port 8502</code></p>
+<p>Run tests:</p>
+<p><code>bash
+uv run pytest</code></p>
+<h3>External services and data dependencies</h3>
+<ul>
+<li>Hugging Face Hub access is required for:</li>
+<li>Dataset loading: <code>dair-ai/emotion</code></li>
+<li>Base model loading (<code>distilgpt2</code>, <code>facebook/opt-350m</code>, or your overridden values)</li>
+<li><code>HF_TOKEN</code> is optional for public assets, but needed for gated/private models.</li>
+</ul>
+<h3>Migrations/seeding</h3>
+<ul>
+<li>No database migrations are defined in this repository.</li>
+<li>Data “seeding” is the deterministic sampling + saving of dataset splits to <code>data/raw/</code> via <code>save_raw_splits</code>.</li>
+</ul>
+<h3>Export this handbook as PDF</h3>
+<p>This repository does not include a built-in PDF task, but this markdown is compatible with Pandoc:</p>
+<p><code>bash
+pandoc ZERO_TO_HERO_STUDY_HANDBOOK.md -o ZERO_TO_HERO_STUDY_HANDBOOK.pdf</code></p>
+<p>Optional (table of contents):</p>
+<p><code>bash
+pandoc ZERO_TO_HERO_STUDY_HANDBOOK.md --toc -o ZERO_TO_HERO_STUDY_HANDBOOK.pdf</code></p>
+<h2>Module 5: Study Plan &amp; Practice Exercises</h2>
+<h3>Ordered study plan for a new learner</h3>
+<ol>
+<li>Start with <code>README.md</code> and <code>pyproject.toml</code> to understand purpose, stack, and entry commands.</li>
+<li>Read <code>src/lora_qlora_lab/config.py</code> to understand all runtime knobs and path resolution.</li>
+<li>Read <code>src/lora_qlora_lab/data/emotion_dataset.py</code> to learn label mapping, prompt format, and sampling/tokenization.</li>
+<li>Read <code>src/lora_qlora_lab/training/fine_tune.py</code> to understand LoRA vs QLoRA setup differences.</li>
+<li>Read <code>src/lora_qlora_lab/eval/inference.py</code> to understand generation-based evaluation and metric computation.</li>
+<li>Read <code>src/lora_qlora_lab/reporting/reporting.py</code> for delta logic, chart/report generation, and JSON sanitization.</li>
+<li>Read <code>src/lora_qlora_lab/pipeline.py</code> to connect all pieces into the end-to-end flow.</li>
+<li>Read <code>src/lora_qlora_lab/cli.py</code>, <code>scripts/run_pipeline.py</code>, and <code>app/streamlit_app.py</code> for entrypoints and user interface.</li>
+<li>Read <code>tests/</code> to see what correctness properties are currently enforced.</li>
+<li>Finish with notebooks and artifacts to correlate code intent with produced outputs.</li>
+</ol>
+<h3>Practice exercises (with solution outlines)</h3>
+<ol>
+<li>
+<p>Exercise: Trace the exact order of baseline and tuned evaluations in the pipeline.
+   Solution outline: In <code>run_pipeline</code>, the order is baseline LoRA -&gt; train LoRA -&gt; tuned LoRA -&gt; baseline QLoRA -&gt; train QLoRA -&gt; tuned QLoRA.</p>
+</li>
+<li>
+<p>Exercise: Write the exact prompt template used for evaluation.
+   Solution outline: Use <code>build_prompt</code> in <code>emotion_dataset.py</code>; it includes label list, <code>Text: &lt;...&gt;</code>, and ends with <code>Label:</code>.</p>
+</li>
+<li>
+<p>Exercise: Explain how integer labels become text labels.
+   Solution outline: <code>decode_label(label_id)</code> indexes <code>LABELS</code>; mapping follows list order <code>[sadness, joy, love, anger, fear, surprise]</code>.</p>
+</li>
+<li>
+<p>Exercise: Identify all places where deterministic behavior is intentionally introduced.
+   Solution outline: <code>set_seed(settings.seed)</code> in pipeline and training functions; <code>shuffle(seed=seed)</code> in <code>sample_splits</code>; deterministic generation via <code>do_sample=False</code>.</p>
+</li>
+<li>
+<p>Exercise: Compare LoRA vs QLoRA training argument differences in this repo.
+   Solution outline: LoRA uses batch size 8/8 and grad accumulation 2; QLoRA uses 2/2 with accumulation 4 and <code>optim="paged_adamw_8bit"</code> plus 4-bit quantization config.</p>
+</li>
+<li>
+<p>Exercise: Describe the schema of one row in <code>predictions.csv</code> and explain how <code>pred_label</code> is chosen.
+   Solution outline: Row has <code>run_name,text,gold_label,raw_completion,pred_label</code>; <code>pred_label</code> comes from first matching label substring in <code>raw_completion</code> else <code>"unknown"</code>.</p>
+</li>
+<li>
+<p>Exercise: Explain how <code>summary.json</code> avoids invalid JSON values like NaN.
+   Solution outline: <code>save_metrics_json</code> calls <code>_sanitize_for_json</code>, converting NaN and <code>pd.NA</code> to <code>None</code> before <code>json.dumps(..., allow_nan=False)</code>.</p>
+</li>
+<li>
+<p>Exercise: Find one documentation/code inconsistency and explain it.
+   Solution outline: <code>train_qlora</code> docstring says “Fine-tune with QLoRA on TinyLlama” while default model is <code>facebook/opt-350m</code> in <code>Settings</code>.</p>
+</li>
+<li>
+<p>Exercise: Identify exactly which files the Streamlit app requires to render the dashboard.
+   Solution outline: Hard requirement: <code>artifacts/metrics/summary.json</code> and <code>artifacts/metrics/evaluation_metrics.csv</code>; optional: <code>artifacts/tables/predictions.csv</code>.</p>
+</li>
+<li>
+<p>Exercise: Explain which tests guard core behavior and which important behaviors are not directly tested.
+    Solution outline: Tests cover prompt helper behavior, split-size capping, delta math, and NaN normalization; they do not directly test end-to-end training/evaluation execution.</p>
+</li>
+</ol>
+<h2>Learner Verification Checklist</h2>
+<p>Use this checklist to confirm end-to-end understanding:</p>
+<ul>
+<li>Can you explain <code>run_pipeline()</code> stage-by-stage without opening the file?</li>
+<li>Can you describe how <code>LABELS</code>, <code>decode_label</code>, and <code>extract_label</code> work together?</li>
+<li>Can you explain the exact LoRA vs QLoRA differences implemented in <code>fine_tune.py</code>?</li>
+<li>Can you describe the input and output schemas of <code>evaluate_model()</code>?</li>
+<li>Can you name every artifact produced under <code>artifacts/</code> and which function writes it?</li>
+<li>Can you explain how <code>compute_deltas()</code> derives gains from baseline/tuned rows?</li>
+<li>Can you explain how the Streamlit app maps artifact files to UI widgets?</li>
+<li>Can you modify one <code>.env</code> setting and predict which module/function behavior changes?</li>
+<li>Can you point to the current test coverage boundaries and missing integration checks?</li>
+</ul>

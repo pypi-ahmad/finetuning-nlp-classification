@@ -1,0 +1,1219 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 9 /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+4 0 obj
+<< /Length 3016 >>
+stream
+BT
+/F1 10 Tf
+50 800 Td
+(# Zero to Hero Study Handbook: lora-dpo-json-extraction) Tj
+T*
+() Tj
+T*
+(## Module 1: Foundations & Architecture) Tj
+T*
+() Tj
+T*
+(### 1\) What this project does) Tj
+T*
+() Tj
+T*
+(This repository builds an end-to-end fine-tuning pipeline for **structured JSON extraction** from ) Tj
+T*
+(support tickets using:) Tj
+T*
+() Tj
+T*
+(- Baseline generation \(no adapter\)) Tj
+T*
+(- Supervised fine-tuning \(SFT\) with LoRA/QLoRA adapters) Tj
+T*
+(- Preference optimization with DPO) Tj
+T*
+(- Stage-by-stage evaluation with persisted prediction artifacts and summary metrics) Tj
+T*
+() Tj
+T*
+(Core runtime entrypoint is ) Tj
+T*
+([`src/lora_dpo_json_extraction/run_pipeline.py`]\(src/lora_dpo_json_extraction/run_pipeline.py\), ) Tj
+T*
+(usually called with:) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(uv run python -m lora_dpo_json_extraction.run_pipeline --config configs/default.yaml) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(### 2\) Main use cases) Tj
+T*
+() Tj
+T*
+(- Learn a full adapter-tuning workflow \(data -> SFT -> DPO -> evaluation\).) Tj
+T*
+(- Compare baseline vs SFT vs DPO on JSON extraction metrics.) Tj
+T*
+(- Study deterministic synthetic data generation and optional internet dataset ingestion ) Tj
+T*
+(\(`PolyAI/banking77`\).) Tj
+T*
+(- Reuse the pipeline skeleton for other extraction schemas/tasks.) Tj
+T*
+() Tj
+T*
+(### 3\) Core paradigms and patterns used in this repo) Tj
+T*
+() Tj
+T*
+(- **Pipeline orchestration pattern**: `run\(\)` in `run_pipeline.py` coordinates fixed stages and ) Tj
+T*
+(writes all artifacts in one run directory.) Tj
+T*
+(- **Config-first design**: `ProjectConfig` \(Pydantic\) in `settings.py` validates YAML config into ) Tj
+T*
+(typed objects.) Tj
+T*
+(- **Hybrid style \(functional + lightweight OOP\)**:) Tj
+T*
+(  - Functional helpers in `data.py`, `evaluate.py`, `utils.py`.) Tj
+T*
+(  - OOP-like dataset/collator classes in `datasets.py`.) Tj
+T*
+(- **Adapter-based fine-tuning**: `models.py` builds PEFT LoRA adapters on top of a base causal LM.) Tj
+T*
+(- **Deterministic data pipeline**: `set_seed\(\)` plus deterministic `random.Random\(seed\)` ) Tj
+T*
+(generation/sampling.) Tj
+T*
+(- **Evaluation with explicit audit artifacts**: `evaluate_stage\(\)` computes rates and writes ) Tj
+T*
+(`predictions_{stage}.jsonl`.) Tj
+T*
+() Tj
+T*
+(### 4\) Architecture: components and interactions) Tj
+T*
+() Tj
+T*
+(Key modules:) Tj
+T*
+() Tj
+T*
+(- `settings.py`: typed config models and YAML loading.) Tj
+T*
+(- `run_pipeline.py`: orchestration, run directory creation, final reporting.) Tj
+T*
+(- `data.py`: synthetic/Banking77 split generation + DPO preference pair construction.) Tj
+T*
+(- `datasets.py`: PyTorch dataset/collator wrappers for SFT and DPO.) Tj
+T*
+(- `models.py`: tokenizer/base model loading, LoRA/QLoRA setup, adapter loading for inference.) Tj
+T*
+(- `train.py`: SFT and DPO training loops.) Tj
+T*
+(- `evaluate.py`: generation-based evaluation and metric computation.) Tj
+T*
+(- `utils.py`: seed, file I/O, JSON extraction helper.) Tj
+T*
+() Tj
+T*
+(Main flow diagram:) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 3424 >>
+stream
+BT
+/F1 10 Tf
+50 800 Td
+(```text) Tj
+T*
+(CLI \(--config\)) Tj
+T*
+(   |) Tj
+T*
+(   v) Tj
+T*
+(load_config\(\) -> ProjectConfig) Tj
+T*
+(   |) Tj
+T*
+(   v) Tj
+T*
+(run\(cfg\)) Tj
+T*
+(   |) Tj
+T*
+(   +--> set_seed\(cfg.seed\)) Tj
+T*
+(   +--> create outputs/run_<timestamp>/) Tj
+T*
+(   +--> build_splits\(...\) --------------+) Tj
+T*
+(   |                                    |) Tj
+T*
+(   +--> build_preference_split\(train\)   |) Tj
+T*
+(   |                                    |) Tj
+T*
+(   +--> evaluate_stage\(stage="base"\)    |) Tj
+T*
+(   +--> train_sft\(...\) -> sft_adapter/  |) Tj
+T*
+(   +--> evaluate_stage\(stage="sft", adapter_dir=sft_adapter\)) Tj
+T*
+(   +--> train_dpo\(..., sft_adapter_dir=sft_adapter\) -> dpo_adapter/) Tj
+T*
+(   +--> evaluate_stage\(stage="dpo", adapter_dir=dpo_adapter\)) Tj
+T*
+(   |) Tj
+T*
+(   +--> write metrics_summary.json) Tj
+T*
+(   +--> write RUN_REPORT.md) Tj
+T*
+(   +--> write predictions_*.jsonl and data/*.jsonl) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(## Module 2: Repository Map) Tj
+T*
+() Tj
+T*
+(| File/Directory Path | Primary Responsibility | Key Classes/Functions | Important Configs/Variables) Tj
+T*
+( |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| `pyproject.toml` | Packaging/dependencies/tool config | N/A | `project.dependencies`, `optional-) Tj
+T*
+(dependencies.cpu/gpu`, `requires-python` |) Tj
+T*
+(| `README.md` | User-facing tutorial and run commands | N/A | Quickstart commands, config file paths) Tj
+T*
+( |) Tj
+T*
+(| `configs/default.yaml` | Default run configuration \(synthetic by default\) | N/A | `seed`, ) Tj
+T*
+(`output_root`, `model.*`, `data.train_size/val_size/test_size`, `train.*`, `eval.max_new_tokens` |) Tj
+T*
+(| `configs/internet_banking77.yaml` | Internet dataset configuration | N/A | ) Tj
+T*
+(`data.source=banking77`, `data.hf_dataset`, split names, training hyperparameters |) Tj
+T*
+(| `src/lora_dpo_json_extraction/run_pipeline.py` | End-to-end stage orchestration and reporting | ) Tj
+T*
+(`run`, `parse_args`, `main`, `_save_data_artifacts`, `_save_markdown_report` | `--config`, summary ) Tj
+T*
+(`deltas` keys |) Tj
+T*
+(| `src/lora_dpo_json_extraction/settings.py` | Typed config schema + YAML loader | `ModelConfig`, ) Tj
+T*
+(`DataConfig`, `TrainConfig`, `EvalConfig`, `ProjectConfig`, `load_config` | Defaults like ) Tj
+T*
+(`DataConfig.source="synthetic"` |) Tj
+T*
+(| `src/lora_dpo_json_extraction/data.py` | Synthetic/Banking77 dataset building and DPO pair ) Tj
+T*
+(generation | `build_splits`, `build_banking77_splits`, `build_preference_split`, ) Tj
+T*
+(`generate_examples`, `build_prompt` | `PROMPT_TEMPLATE`, intent/product/priority phrase maps, ) Tj
+T*
+(Banking77 mapping rules |) Tj
+T*
+(| `src/lora_dpo_json_extraction/datasets.py` | Torch datasets and collators for training | ) Tj
+T*
+(`SFTDataset`, `DPODataset`, `SFTCollator`, `DPOCollator` | Response-token loss masking, pad token ) Tj
+T*
+(handling |) Tj
+T*
+(| `src/lora_dpo_json_extraction/models.py` | Tokenizer/model loading + LoRA/QLoRA adapter setup | ) Tj
+T*
+(`load_tokenizer`, `load_base_model`, `build_lora_model`, `load_adapter_for_inference`, `device_of` |) Tj
+T*
+( `HF_HUB_DISABLE_XET`, QLoRA branch via `BitsAndBytesConfig` |) Tj
+T*
+(| `src/lora_dpo_json_extraction/train.py` | SFT and DPO training loops | `train_sft`, `train_dpo`, ) Tj
+T*
+(`_sequence_log_probs`, `_evaluate_sft_loss` | `cfg.train.*` hyperparameters, gradient accumulation, ) Tj
+T*
+(scheduler warmup |) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 3225 >>
+stream
+BT
+/F1 10 Tf
+50 800 Td
+(| `src/lora_dpo_json_extraction/evaluate.py` | Inference-time generation parsing and metrics | ) Tj
+T*
+(`evaluate_stage`, `_safe_parse_json`, `_generate_prediction`, `_coerce_prediction` | ) Tj
+T*
+(`EXPECTED_KEYS`, `cfg.eval.max_new_tokens` |) Tj
+T*
+(| `src/lora_dpo_json_extraction/schemas.py` | Target extraction schema \(Pydantic\) | ) Tj
+T*
+(`TicketExtraction` | Required keys: `intent`, `priority`, `product`, `needs_human` |) Tj
+T*
+(| `src/lora_dpo_json_extraction/utils.py` | Utility helpers for seed and file I/O | `set_seed`, ) Tj
+T*
+(`write_json`, `write_jsonl`, `read_jsonl`, `extract_first_json_object` | JSON object extraction by ) Tj
+T*
+(brace balancing |) Tj
+T*
+(| `tests/test_data_generation.py` | Static checks for split/prefs behavior | ) Tj
+T*
+(`test_splits_have_expected_sizes`, `test_preference_pairs_contain_chosen_and_rejected`, ) Tj
+T*
+(`test_unknown_data_source_raises` | Verifies expected split sizes and error handling |) Tj
+T*
+(| `tests/test_json_parser.py` | Static checks for JSON substring parser | ) Tj
+T*
+(`test_extract_first_json_object`, `test_extract_none_on_no_object` | Confirms parser behavior for ) Tj
+T*
+(valid/invalid text |) Tj
+T*
+() Tj
+T*
+(Files a new contributor should read first:) Tj
+T*
+() Tj
+T*
+(1. `README.md`) Tj
+T*
+(2. `configs/default.yaml`) Tj
+T*
+(3. `src/lora_dpo_json_extraction/run_pipeline.py`) Tj
+T*
+(4. `src/lora_dpo_json_extraction/data.py`) Tj
+T*
+(5. `src/lora_dpo_json_extraction/train.py`) Tj
+T*
+(6. `src/lora_dpo_json_extraction/evaluate.py`) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(## Module 3: Core Execution Flows) Tj
+T*
+() Tj
+T*
+(### Flow A: Entry point and orchestration \(`run_pipeline.py`\)) Tj
+T*
+() Tj
+T*
+(1. `main\(\)` calls `parse_args\(\)`, which defines `--config` defaulting to `configs/default.yaml`.) Tj
+T*
+(2. `main\(\)` loads config via `load_config\(args.config\)` from `settings.py`.) Tj
+T*
+(3. `run\(cfg\)` executes the full pipeline:) Tj
+T*
+(   - `set_seed\(cfg.seed\)`) Tj
+T*
+(   - `_make_run_dir\(cfg\)` creates `outputs/run_<YYYYmmdd_HHMMSS>/`) Tj
+T*
+(   - `build_splits\(...\)` creates `train`, `val`, `test`) Tj
+T*
+(   - `build_preference_split\(splits["train"], seed=cfg.seed\)` creates DPO pairs) Tj
+T*
+(   - `_save_data_artifacts\(...\)` writes data JSONL files) Tj
+T*
+(   - `evaluate_stage\(stage="base", ...\)`) Tj
+T*
+(   - `train_sft\(...\)`) Tj
+T*
+(   - `evaluate_stage\(stage="sft", adapter_dir=...\)`) Tj
+T*
+(   - `train_dpo\(..., sft_adapter_dir=...\)`) Tj
+T*
+(   - `evaluate_stage\(stage="dpo", adapter_dir=...\)`) Tj
+T*
+(   - writes `metrics_summary.json` and `RUN_REPORT.md`) Tj
+T*
+() Tj
+T*
+(Short code fragment \(real logic shape\):) Tj
+T*
+() Tj
+T*
+(```python) Tj
+T*
+(base_metrics = evaluate_stage\(cfg=cfg, stage="base", rows=splits["test"], output_dir=run_dir\)) Tj
+T*
+(sft_summary = train_sft\(cfg, splits["train"], splits["val"], run_dir\)) Tj
+T*
+(sft_metrics = evaluate_stage\(cfg=cfg, stage="sft", rows=splits["test"], output_dir=run_dir, ) Tj
+T*
+(adapter_dir=sft_summary["adapter_dir"]\)) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(### Flow B: Data construction \(`data.py`\)) Tj
+T*
+() Tj
+T*
+(#### B1\) SFT/Eval split generation) Tj
+T*
+() Tj
+T*
+(`build_splits\(...\)` dispatches by `source`:) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 2425 >>
+stream
+BT
+/F1 10 Tf
+50 800 Td
+(- `"synthetic"`: calls `generate_examples\(total_size, seed\)` and slices into train/val/test.) Tj
+T*
+(- `"banking77"` or aliases: calls `build_banking77_splits\(...\)` which uses ) Tj
+T*
+(`datasets.load_dataset\(...\)`.) Tj
+T*
+() Tj
+T*
+(Synthetic row shape:) Tj
+T*
+() Tj
+T*
+(```python) Tj
+T*
+({) Tj
+T*
+(  "prompt": str,) Tj
+T*
+(  "response": str,   # JSON string) Tj
+T*
+(  "target": {) Tj
+T*
+(    "intent": str,) Tj
+T*
+(    "priority": str,      # "low" | "medium" | "high") Tj
+T*
+(    "product": str,) Tj
+T*
+(    "needs_human": bool) Tj
+T*
+(  }) Tj
+T*
+(}) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(`build_prompt\(ticket\)` injects ticket text into `PROMPT_TEMPLATE` and ends with `JSON:` so the model) Tj
+T*
+( is guided to produce JSON only.) Tj
+T*
+() Tj
+T*
+(#### B2\) Banking77 mapping) Tj
+T*
+() Tj
+T*
+(In `_banking77_row_to_payload\(text, label_name\)`:) Tj
+T*
+() Tj
+T*
+(1. Normalize label with `_normalize_intent`.) Tj
+T*
+(2. Map to grouped `intent` via `_derive_intent_group_from_banking77_label`.) Tj
+T*
+(3. Derive `priority` via `_derive_priority_from_banking77`.) Tj
+T*
+(4. Derive `product` via `_derive_product_from_banking77_intent`.) Tj
+T*
+(5. Derive `needs_human` via `_derive_needs_human_from_banking77`.) Tj
+T*
+(6. Validate via `TicketExtraction.model_validate\(...\)`.) Tj
+T*
+() Tj
+T*
+(#### B3\) DPO preference pair generation) Tj
+T*
+() Tj
+T*
+(`build_preference_split\(train_rows, seed\)` creates rows with:) Tj
+T*
+() Tj
+T*
+(```python) Tj
+T*
+({) Tj
+T*
+(  "prompt": str,) Tj
+T*
+(  "chosen": str,      # row["response"] \(correct JSON string\)) Tj
+T*
+(  "rejected": str,    # intentionally weaker variant) Tj
+T*
+(  "target": {...}     # same target dict) Tj
+T*
+(}) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(`_build_rejected\(...\)` uses one of:) Tj
+T*
+() Tj
+T*
+(- `wrong_field`) Tj
+T*
+(- `missing_field`) Tj
+T*
+(- `extra_text` \(prepends non-JSON text before JSON\)) Tj
+T*
+() Tj
+T*
+(### Flow C: SFT training \(`train.py` + `datasets.py` + `models.py`\)) Tj
+T*
+() Tj
+T*
+(1. `train_sft\(...\)` loads tokenizer and LoRA model:) Tj
+T*
+(   - `tokenizer = load_tokenizer\(cfg.model.name\)`) Tj
+T*
+(   - `model = build_lora_model\(cfg.model, for_training=True\)`) Tj
+T*
+(2. Creates `SFTDataset` for train/val and `DataLoader` with `SFTCollator`.) Tj
+T*
+(3. `SFTDataset.__getitem__` encodes `prompt` + `response + eos`, and applies **response-only loss**:) Tj
+T*
+(   - prompt labels are `-100` \(ignored by CE loss\)) Tj
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 2491 >>
+stream
+BT
+/F1 10 Tf
+50 800 Td
+(   - response token labels are actual token ids) Tj
+T*
+(4. Training loop does:) Tj
+T*
+(   - forward pass) Tj
+T*
+(   - loss scaling by `gradient_accumulation_steps`) Tj
+T*
+(   - `loss.backward\(\)`) Tj
+T*
+(   - grad clipping, optimizer/scheduler steps) Tj
+T*
+(5. Validation loss via `_evaluate_sft_loss`.) Tj
+T*
+(6. Saves adapter to `run_dir / "sft_adapter"` and tokenizer to `run_dir / "tokenizer"`.) Tj
+T*
+() Tj
+T*
+(SFT summary output shape:) Tj
+T*
+() Tj
+T*
+(```python) Tj
+T*
+({) Tj
+T*
+(  "adapter_dir": str,) Tj
+T*
+(  "tokenizer_dir": str,) Tj
+T*
+(  "history": [{"epoch": float, "train_loss": float, "val_loss": float}, ...],) Tj
+T*
+(  "global_steps": int) Tj
+T*
+(}) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(### Flow D: DPO training \(`train.py`\)) Tj
+T*
+() Tj
+T*
+(1. `train_dpo\(...\)` loads:) Tj
+T*
+(   - policy model from base + SFT adapter \(`is_trainable=True`\)) Tj
+T*
+(   - reference model from base + SFT adapter \(`is_trainable=False`, frozen params\)) Tj
+T*
+(2. Builds `DPODataset` + `DPOCollator`.) Tj
+T*
+(3. Per batch:) Tj
+T*
+(   - compute chosen/rejected sequence log-probs for policy and reference via ) Tj
+T*
+(`_sequence_log_probs\(...\)`) Tj
+T*
+(   - compute advantage:) Tj
+T*
+(     - `\(chosen_pi - rejected_pi\) - \(chosen_ref - rejected_ref\)`) Tj
+T*
+(   - DPO loss:) Tj
+T*
+(     - `-logsigmoid\(cfg.train.dpo_beta * advantage\).mean\(\)`) Tj
+T*
+(4. Runs optimizer/scheduler steps and records epoch loss.) Tj
+T*
+(5. Saves adapter to `run_dir / "dpo_adapter"`.) Tj
+T*
+() Tj
+T*
+(DPO summary output shape:) Tj
+T*
+() Tj
+T*
+(```python) Tj
+T*
+({) Tj
+T*
+(  "adapter_dir": str,) Tj
+T*
+(  "history": [{"epoch": float, "dpo_loss": float}, ...],) Tj
+T*
+(  "global_steps": int) Tj
+T*
+(}) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(### Flow E: Evaluation and metrics \(`evaluate.py`\)) Tj
+T*
+() Tj
+T*
+(`evaluate_stage\(cfg, stage, rows, output_dir, adapter_dir=None\)`:) Tj
+T*
+() Tj
+T*
+(1. Loads tokenizer \(`load_tokenizer`\).) Tj
+T*
+(2. Builds model:) Tj
+T*
+(   - `stage="base"` -> `load_base_model\(..., for_training=False\)`) Tj
+T*
+(   - `stage in {"sft","dpo"}` -> `load_adapter_for_inference\(...\)`) Tj
+T*
+(3. For each row:) Tj
+T*
+(   - generate output with `_generate_prediction\(...\)` \(`do_sample=False`, `temperature=0.0`\)) Tj
+T*
+(   - parse first balanced JSON object using `extract_first_json_object\(...\)` then `json.loads\(...\)`) Tj
+T*
+(   - normalize with `_coerce_prediction\(...\)`) Tj
+T*
+(4. Computes metrics and writes `predictions_{stage}.jsonl`.) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 1636 >>
+stream
+BT
+/F1 10 Tf
+50 800 Td
+(Per-prediction JSONL row shape:) Tj
+T*
+() Tj
+T*
+(```python) Tj
+T*
+({) Tj
+T*
+(  "prompt": str,) Tj
+T*
+(  "target": dict,) Tj
+T*
+(  "prediction_text": str,) Tj
+T*
+(  "prediction_json": dict | None,) Tj
+T*
+(  "valid_json": bool,) Tj
+T*
+(  "exact_match": bool,) Tj
+T*
+(  "latency_ms": float) Tj
+T*
+(}) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(Stage metrics dict shape:) Tj
+T*
+() Tj
+T*
+(```python) Tj
+T*
+({) Tj
+T*
+(  "stage": str,) Tj
+T*
+(  "num_examples": int,) Tj
+T*
+(  "valid_json_rate": float,) Tj
+T*
+(  "schema_match_rate": float,) Tj
+T*
+(  "exact_match_rate": float,) Tj
+T*
+(  "field_accuracy": float,) Tj
+T*
+(  "avg_latency_ms": float) Tj
+T*
+(}) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(## Module 4: Setup & Run Guide) Tj
+T*
+() Tj
+T*
+(### 1\) Tech stack inferred from repo files) Tj
+T*
+() Tj
+T*
+(- Language: Python 3.12 \(`pyproject.toml` says `>=3.12,<3.13`\)) Tj
+T*
+(- ML stack: PyTorch + Transformers + PEFT + Datasets) Tj
+T*
+(- Config: YAML + Pydantic models) Tj
+T*
+(- Package/tooling: `uv` + `setuptools`) Tj
+T*
+(- Logging: `loguru`) Tj
+T*
+() Tj
+T*
+(### 2\) Clean-machine setup \(static command sequence\)) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(git clone https://github.com/pypi-ahmad/lora-dpo-json-extraction.git) Tj
+T*
+(cd lora-dpo-json-extraction) Tj
+T*
+(uv sync --extra gpu) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(CPU-only installation can use:) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(uv sync --extra cpu) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(### 3\) Environment configuration) Tj
+T*
+() Tj
+T*
+(No `.env` file or required secret keys are defined in the source code.) Tj
+T*
+() Tj
+T*
+(Environment variables used or documented:) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 2201 >>
+stream
+BT
+/F1 10 Tf
+50 800 Td
+(- `HF_HUB_DISABLE_XET`) Tj
+T*
+(  - Used in `models.py` via `os.environ.setdefault\("HF_HUB_DISABLE_XET", "1"\)`.) Tj
+T*
+(  - README also shows setting it explicitly in run commands.) Tj
+T*
+(- `CUDA_VISIBLE_DEVICES`) Tj
+T*
+(  - Used in README command example to force CPU path \(`CUDA_VISIBLE_DEVICES=''`\).) Tj
+T*
+() Tj
+T*
+(### 4\) Configuration files and key controls) Tj
+T*
+() Tj
+T*
+(- `configs/default.yaml`) Tj
+T*
+(  - Uses local Qwen snapshot path in `model.name`) Tj
+T*
+(  - `model.use_qlora: true`) Tj
+T*
+(  - No explicit `data.source`, so `DataConfig` default applies: `"synthetic"`) Tj
+T*
+(- `configs/internet_banking77.yaml`) Tj
+T*
+(  - `data.source: banking77`) Tj
+T*
+(  - `data.hf_dataset: PolyAI/banking77`) Tj
+T*
+(  - Uses `distilgpt2` and LoRA-only \(`use_qlora: false`\)) Tj
+T*
+() Tj
+T*
+(### 5\) Typical run commands) Tj
+T*
+() Tj
+T*
+(Synthetic/default path:) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(HF_HUB_DISABLE_XET=1 uv run python -m lora_dpo_json_extraction.run_pipeline --config ) Tj
+T*
+(configs/default.yaml) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(Banking77 path:) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(CUDA_VISIBLE_DEVICES='' HF_HUB_DISABLE_XET=1 uv run python -m lora_dpo_json_extraction.run_pipeline ) Tj
+T*
+(--config configs/internet_banking77.yaml) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(### 6\) Runtime artifacts written by pipeline) Tj
+T*
+() Tj
+T*
+(Under `outputs/run_<timestamp>/`:) Tj
+T*
+() Tj
+T*
+(- `config_snapshot.json`) Tj
+T*
+(- `run.log`) Tj
+T*
+(- `metrics_summary.json`) Tj
+T*
+(- `RUN_REPORT.md`) Tj
+T*
+(- `predictions_base.jsonl`) Tj
+T*
+(- `predictions_sft.jsonl`) Tj
+T*
+(- `predictions_dpo.jsonl`) Tj
+T*
+(- `sft_training_summary.json`) Tj
+T*
+(- `dpo_training_summary.json`) Tj
+T*
+(- `sft_adapter/`) Tj
+T*
+(- `dpo_adapter/`) Tj
+T*
+(- `tokenizer/`) Tj
+T*
+(- `data/train_sft.jsonl`) Tj
+T*
+(- `data/val_sft.jsonl`) Tj
+T*
+(- `data/test_eval.jsonl`) Tj
+T*
+(- `data/train_dpo_prefs.jsonl`) Tj
+T*
+() Tj
+T*
+(### 7\) Database migrations or seeding) Tj
+T*
+() Tj
+T*
+(- No database layer exists in this repo.) Tj
+T*
+(- No migration or DB seeding scripts exist.) Tj
+T*
+(- Data ?seeding? is handled by deterministic split generation via `seed` in config and `set_seed\(\)`.) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 16 0 R >>
+endobj
+18 0 obj
+<< /Length 3198 >>
+stream
+BT
+/F1 10 Tf
+50 800 Td
+(### 8\) Export this handbook to PDF \(optional\)) Tj
+T*
+() Tj
+T*
+(```bash) Tj
+T*
+(pandoc ZERO_TO_HERO_STUDY_HANDBOOK.md -o ZERO_TO_HERO_STUDY_HANDBOOK.pdf) Tj
+T*
+(```) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(## Module 5: Study Plan & Practice Exercises) Tj
+T*
+() Tj
+T*
+(### 1\) Ordered study plan for a new learner) Tj
+T*
+() Tj
+T*
+(1. Read `README.md` for goals, stage order, and expected artifacts.) Tj
+T*
+(2. Read `pyproject.toml` for dependencies and Python/tooling constraints.) Tj
+T*
+(3. Read `settings.py` and both YAML files to understand config contract and defaults.) Tj
+T*
+(4. Read `schemas.py` and `data.py` to learn target schema and how datasets are built.) Tj
+T*
+(5. Read `datasets.py` to understand tokenization, truncation, masking, and padding.) Tj
+T*
+(6. Read `models.py` and `train.py` to understand LoRA/QLoRA and DPO loops.) Tj
+T*
+(7. Read `evaluate.py` to learn parsing and metric calculations.) Tj
+T*
+(8. Read `run_pipeline.py` last to connect all pieces end-to-end.) Tj
+T*
+(9. Read `tests/` to confirm intended behavior for split generation and JSON extraction utility.) Tj
+T*
+() Tj
+T*
+(### 2\) Practice exercises \(with pointers\)) Tj
+T*
+() Tj
+T*
+(1. **Trace the default data source**) Tj
+T*
+(   - Question: If `configs/default.yaml` omits `data.source`, which source is used and where is that) Tj
+T*
+( default defined?) Tj
+T*
+(   - Files: `configs/default.yaml`, `src/lora_dpo_json_extraction/settings.py`, ) Tj
+T*
+(`src/lora_dpo_json_extraction/data.py`) Tj
+T*
+() Tj
+T*
+(2. **Draw the exact stage order**) Tj
+T*
+(   - Question: In what exact order are baseline eval, SFT, DPO, and evaluations executed in `run\(\)`?) Tj
+T*
+(   - Files: `src/lora_dpo_json_extraction/run_pipeline.py`) Tj
+T*
+() Tj
+T*
+(3. **Explain response-only SFT loss**) Tj
+T*
+(   - Question: How does `SFTDataset.__getitem__` ensure prompt tokens are ignored in loss?) Tj
+T*
+(   - Files: `src/lora_dpo_json_extraction/datasets.py`) Tj
+T*
+() Tj
+T*
+(4. **Explain how rejected DPO responses are built**) Tj
+T*
+(   - Question: What three corruption modes can `_build_rejected\(\)` create?) Tj
+T*
+(   - Files: `src/lora_dpo_json_extraction/data.py`) Tj
+T*
+() Tj
+T*
+(5. **Banking77 mapping reasoning**) Tj
+T*
+(   - Question: How are `intent`, `priority`, `product`, and `needs_human` derived from raw Banking77) Tj
+T*
+( labels and text?) Tj
+T*
+(   - Files: `src/lora_dpo_json_extraction/data.py`) Tj
+T*
+() Tj
+T*
+(6. **Metric math check**) Tj
+T*
+(   - Question: How are `valid_json_rate`, `schema_match_rate`, and `field_accuracy` computed?) Tj
+T*
+(   - Files: `src/lora_dpo_json_extraction/evaluate.py`) Tj
+T*
+() Tj
+T*
+(7. **Adapter loading path**) Tj
+T*
+(   - Question: How does evaluation decide between base model and adapter-based model loading?) Tj
+T*
+(   - Files: `src/lora_dpo_json_extraction/evaluate.py`, `src/lora_dpo_json_extraction/models.py`) Tj
+T*
+() Tj
+T*
+(8. **Artifact contract**) Tj
+T*
+(   - Question: List all files/subfolders that `run_pipeline.py` guarantees to write when stages ) Tj
+T*
+(complete.) Tj
+T*
+(   - Files: `src/lora_dpo_json_extraction/run_pipeline.py`, `src/lora_dpo_json_extraction/train.py`,) Tj
+T*
+( `src/lora_dpo_json_extraction/evaluate.py`) Tj
+ET
+endstream
+endobj
+19 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 18 0 R >>
+endobj
+20 0 obj
+<< /Length 3195 >>
+stream
+BT
+/F1 10 Tf
+50 800 Td
+() Tj
+T*
+(### 3\) Model answer outlines) Tj
+T*
+() Tj
+T*
+(1. **Default data source answer outline**) Tj
+T*
+(   - `DataConfig.source` default is `"synthetic"` in `settings.py`.) Tj
+T*
+(   - `configs/default.yaml` does not override it.) Tj
+T*
+(   - `build_splits\(\)` receives this value and follows synthetic path.) Tj
+T*
+() Tj
+T*
+(2. **Stage order answer outline**) Tj
+T*
+(   - `evaluate_stage\("base"\)` -> `train_sft\(\)` -> `evaluate_stage\("sft"\)` -> `train_dpo\(\)` -> ) Tj
+T*
+(`evaluate_stage\("dpo"\)`.) Tj
+T*
+() Tj
+T*
+(3. **Response-only loss answer outline**) Tj
+T*
+(   - `labels = [-100] * prompt_len + input_ids[prompt_len:]`.) Tj
+T*
+(   - `-100` tells CE loss to ignore prompt tokens.) Tj
+T*
+() Tj
+T*
+(4. **Rejected response modes answer outline**) Tj
+T*
+(   - Wrong field value mutation.) Tj
+T*
+(   - Missing a required field.) Tj
+T*
+(   - Prefixing extra non-JSON text before JSON payload.) Tj
+T*
+() Tj
+T*
+(5. **Banking77 mapping answer outline**) Tj
+T*
+(   - Normalize label text.) Tj
+T*
+(   - Map to grouped intent using keyword rules.) Tj
+T*
+(   - Derive priority from intent group and urgency keywords.) Tj
+T*
+(   - Derive product from keyword mapping.) Tj
+T*
+(   - Derive needs_human from group/keywords/priority.) Tj
+T*
+(   - Validate final dict against `TicketExtraction`.) Tj
+T*
+() Tj
+T*
+(6. **Metric math answer outline**) Tj
+T*
+(   - `valid_json_rate = valid_json / len\(rows\)`) Tj
+T*
+(   - `schema_match_rate = schema_match / len\(rows\)` where schema match means exact expected key set.) Tj
+T*
+(   - `field_accuracy = field_hits / \(len\(rows\) * len\(EXPECTED_KEYS\)\)`) Tj
+T*
+() Tj
+T*
+(7. **Adapter loading answer outline**) Tj
+T*
+(   - In `_build_model`, stage `"base"` calls `load_base_model\(...\)`.) Tj
+T*
+(   - Other stages require `adapter_dir` and call `load_adapter_for_inference\(...\)`.) Tj
+T*
+() Tj
+T*
+(8. **Artifact contract answer outline**) Tj
+T*
+(   - Core outputs from orchestrator: config snapshot, logs, summary/report, predictions.) Tj
+T*
+(   - Training adds `sft_adapter/`, `dpo_adapter/`, tokenizer and training summary JSON files.) Tj
+T*
+(   - Data artifacts saved under `data/` JSONL files.) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+(## Understanding Checklist) Tj
+T*
+() Tj
+T*
+(Use this checklist before claiming mastery:) Tj
+T*
+() Tj
+T*
+(- Can you explain what `run\(\)` in `run_pipeline.py` does without looking at the file?) Tj
+T*
+(- Can you describe how `build_splits\(\)` changes behavior for `synthetic` vs `banking77`?) Tj
+T*
+(- Can you explain why `TicketExtraction` validation is used in data building?) Tj
+T*
+(- Can you describe exactly how SFT loss masking is implemented?) Tj
+T*
+(- Can you explain the difference between policy and reference models in `train_dpo\(\)`?) Tj
+T*
+(- Can you derive DPO loss terms from `_sequence_log_probs\(\)` outputs?) Tj
+T*
+(- Can you explain how prediction text is converted into `prediction_json` safely?) Tj
+T*
+(- Can you compute each evaluation metric manually for a tiny 2-row example?) Tj
+T*
+(- Can you list which output files are used for debugging bad model behavior?) Tj
+T*
+(- Can you state which environment variables are optional and where they are used?) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+21 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 20 0 R >>
+endobj
+xref
+0 22
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000175 00000 n 
+0000000243 00000 n 
+0000003311 00000 n 
+0000003437 00000 n 
+0000006913 00000 n 
+0000007039 00000 n 
+0000010316 00000 n 
+0000010442 00000 n 
+0000012920 00000 n 
+0000013048 00000 n 
+0000015592 00000 n 
+0000015720 00000 n 
+0000017409 00000 n 
+0000017537 00000 n 
+0000019791 00000 n 
+0000019919 00000 n 
+0000023170 00000 n 
+0000023298 00000 n 
+0000026546 00000 n 
+trailer
+<< /Size 22 /Root 1 0 R >>
+startxref
+26674
+%%EOF
